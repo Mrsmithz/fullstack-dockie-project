@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "loyal-framework-292414",
+  "private_key_id": "1192ba0d1e43ad6834d516b9e06bd2ae3cfc478c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC+Osq+UKLTq7hc\n77n0Kals0ek9HV1trZKxSh+DeEu27GI/gVbpozdO3AiOwL2yCDLCb5RuqDYQrJGO\ndiYRYdqrqCOEiE0+JSHSORhKLHvpX6fHQdwqwT0X+KUoFmBQjADofwSOtXnGDL/V\n8or0LJhYw19FFjghAs3hIo5tMlX+PmgmqFwyyAmt+lp8/f6U06iWE/1D7h/+MpKb\nvjQAmzfDJLwIlxFZ5B/WVylRfjTHIdgBaOr0T8aG+AobEMRPTgiMdF+GYZXiybDV\noiWY0WpgFIclePFxf23Y7ha/H2x+80oV8Cw5YAfv9NRr8c4r9Bv6XdWawmOW1BhK\nWtTgbfnBAgMBAAECggEAAIuyoTEiBnFrqfiWE/k6nzFK9f3rkrD4xsFrrbjenru2\n3G/GjA0Hz5YaAC7VXHlhi+U+C8M3xHx6PmpgWZRqSCvHTk4FyrPYkP3Q8AWIpXa8\nyHmL5COBxVvVPXQy+ogsSH50yOQEYWkP89EqTOED3t1QnKYfqxiS9p5ewjluvbf2\n1cZ7xn0uwd6WYjJzpVD2TlR+kQz40hN6Nn7lNmIzkjMlgoMGn+ANL00IpThnFef8\nUmu7Gn/Caa2NN1Ig0Y0pohFXeTfboY3aNi+HY+5ClWCqaDZQKn/ZFeWI5GA7k+DS\niH+lFeKAeYxgDUcSGjvJHcv7fQhL5WltjguEoV5ZsQKBgQD6nGP/6e/98sCsR19T\nt06S85GQf142w8/YiHYyfT1pi6jkzdkSApITGxay0dQnLIMqVV9siuQUEANDZcre\nA1+7kENElB8Cx3LUJJ8VNqsEc6/53KxxTpoBqh8yJAphkeMJPsdkfahqWucDhWPI\nXSCw0nV6UyAMkJHp2g0DNBeWewKBgQDCUgDjIWlpnij+1+L3b8GDiOixeO9nzQsv\nN+ZcXglxExoxkSli4Uso2OljFr9sgKaJttvX+JYHqAafZHa7KI1eX6Fjt0FrDmz3\n36nE3S3ePx4JXZr23BGP71NEC+76bz39rhDV/aQP5ZlBCG4vmzvLCy1qPQiQnPdV\nSLccuJ558wKBgDCs2XtmO5fOY3/SqQBAlUFTj41KP8lRRPhgoNxzmM78MkSmeqfV\n2fteAo2e1Z76NUuuo0cYvu3qokef6MQwUZLDlV0ni9JlXLc5mbBsGtFVivNz2gZz\n5tO18DMz7tQ+mqM8D0xEX8awezgi21uaQvQ1HF4y8QGfvsd185sQrhgrAoGAM1rI\nsT4bRbZuzyru6MW4NrLwDDcRzjT6R7hWQQL5K9EIkyDx9xfjbSAmTfGtFVfKq4qP\n/zvLKqrVVTqPxlapRc+wL1I3D7v4QGnzy/tIK/wyS/dZBPSUD54IO2uL9NOBZpGi\nEWu++BSNtAouVJaJ7tc9YV5P7SgOlZNqEUUZXNECgYASrJrAOfpE31RSND7Zg70F\nCRAt/PKn1bzP3CjpKAi+xNcvpDI3WjAryHOPxuuQE6nPUutZh9A4atOfuhZ53uSX\nYQ6/sTPHvh6skHk5EfutlfBzrIfacCizHsTjM2wWSnUwW8Pw7lcFN4rJ01aEK0Zq\n6avNd83vop6eCFoStIsKgg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "dockie-ocr@loyal-framework-292414.iam.gserviceaccount.com",
+  "client_id": "116857648184570187770",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dockie-ocr%40loyal-framework-292414.iam.gserviceaccount.com"
+}

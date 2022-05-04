@@ -1,0 +1,56 @@
+@import './_variables.scss';
+
+.container {
+  width: "100%";
+  padding: 6rem 1rem;
+  display:flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background-color: $bg-black;
+}
+
+.homeHeader {
+  color: white;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.newestPostBox {
+  width: 100%;
+  min-height: 6rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  background-color: $gray--400;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.4rem 0.2rem;
+
+  p {
+    margin-top: 0 !important;
+  }
+}
+
+.newestPostTagBox {
+  min-width: 3rem;
+  max-width: 10rem;
+  max-height: 0.8rem;
+  border-radius: 1.5rem;
+  background-color: white;
+  font-size: 0.7rem;
+  margin: 0.2rem;
+  padding: 0.6rem 0;
+
+  span {
+    max-width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+}
+
+.newestPostImage {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 4rem;
+}

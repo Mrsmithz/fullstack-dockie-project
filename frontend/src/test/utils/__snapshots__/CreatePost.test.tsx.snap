@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Testing Upload Document Page upload file 1`] = `
+Array [
+  <input
+    autocomplete="off"
+    data-testid="upload-document"
+    id="upload-document"
+    multiple=""
+    style="display: none;"
+    tabindex="-1"
+    type="file"
+  />,
+]
+`;

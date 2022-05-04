@@ -1,0 +1,21 @@
+services:
+  nginx:
+    image: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/conf:/etc/nginx
+  next-app:
+    build:
+      context: ../frontend/
+      dockerfile: Dockerfile
+    ports:
+      - 3493:3493
+  express-app:
+    build:
+      context: ../backend/
+      dockerfile: Dockerfile
+    ports:
+      - 8349:8349
+    environment:
+      - MONGODB_URI=${MONGODB_URI}

@@ -7,19 +7,34 @@ import { MongoMemoryServer } from 'mongodb-memory-server'
 import { isArrayOfString } from '../../utils/utils'
 import { HttpStatus } from '../../../src/utils/HttpStatus.enum'
 import { FILE_FIELD_NAME } from '../../../src/config/fileUpload.config'
+import profile from '../../utils/profile'
 const pdfFilePath = '../assets/test-pdf.pdf'
 const imageFilePath = '../assets/test-image.png'
 
 let mongo : MongoMemoryServer = null
 
+const config = {
+    Authorization: ''
+}
+
 describe('Post API Endpoints', () => {
-    jest.setTimeout(20000)
+    jest.setTimeout(30000)
 
     beforeAll(async () : Promise<void> => {
         mongo = await MongoMemoryServer.create()
         const uri = mongo.getUri()
         await connectDB(uri)
         await connectGridFS(uri)
+
+        const response = await supertest(app)
+        .post(`${ContextPath}/auth/signup`)
+        .send({
+            ...profile
+        })
+        const { body, statusCode} = response
+        expect(statusCode).toBe(HttpStatus.CREATED)
+        expect(body).toHaveProperty('accessToken')
+        config.Authorization = `Bearer ${body.accessToken}`
     })
     afterAll(async () : Promise<void> => {
         await disconnectDB()
@@ -33,6 +48,7 @@ describe('Post API Endpoints', () => {
 
         const documentResponse = await supertest(app)
         .post(`${ContextPath}/file/ocr`)
+        .set(config)
         .attach(FILE_FIELD_NAME, path.join(__dirname, pdfFilePath))
         const {body, statusCode} = documentResponse
         expect(statusCode).toBe(HttpStatus.OK)

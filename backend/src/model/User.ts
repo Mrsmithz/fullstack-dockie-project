@@ -47,6 +47,7 @@ const customizationOptions = {}
 const UserTC = composeMongoose(User, customizationOptions)
 
 export { User }
+
 schemaComposer.Query.addFields({
     userById: UserTC.mongooseResolvers.findById(),
     user: UserTC.mongooseResolvers.findOne(),

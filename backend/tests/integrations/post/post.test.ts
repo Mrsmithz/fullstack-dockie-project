@@ -9,19 +9,31 @@ import { MongoMemoryServer } from 'mongodb-memory-server'
 import { isArrayOfString } from '../../utils/utils'
 import { HttpStatus } from '../../../src/utils/HttpStatus.enum'
 import { FILE_FIELD_NAME, IMAGES_FIELD_NAME, UPDATE_IMAGES_FIELD_NAME} from '../../../src/config/fileUpload.config'
+import profile from '../../utils/profile'
 const pdfFilePath = '../assets/test-pdf.pdf'
 const imageFilePath = '../assets/test-image.png'
 
 let mongo : MongoMemoryServer = null
-
+const config = {
+    Authorization: ''
+}
 describe('Post API Endpoints', () => {
     jest.setTimeout(30000)
-
     beforeAll(async () : Promise<void> => {
         mongo = await MongoMemoryServer.create()
         const uri = mongo.getUri()
         await connectDB(uri)
         await connectGridFS(uri)
+
+        const response = await supertest(app)
+        .post(`${ContextPath}/auth/signup`)
+        .send({
+            ...profile
+        })
+        const { body, statusCode} = response
+        expect(statusCode).toBe(HttpStatus.CREATED)
+        expect(body).toHaveProperty('accessToken')
+        config.Authorization = `Bearer ${body.accessToken}`
     })
     afterAll(async () : Promise<void> => {
         await disconnectDB()
@@ -29,12 +41,12 @@ describe('Post API Endpoints', () => {
         await mongo.stop()
     })
     afterEach(async () : Promise<void> => {
-        await clearDB()
+        await clearDB(['users'])
     })
     it('Should Create Post', async () => {
-
         const documentResponse = await supertest(app)
         .post(`${ContextPath}/file/ocr`)
+        .set(config)
         .attach(FILE_FIELD_NAME, path.join(__dirname, pdfFilePath))
         expect(documentResponse.statusCode).toBe(HttpStatus.OK)
 
@@ -46,6 +58,7 @@ describe('Post API Endpoints', () => {
 
         const response = await supertest(app)
         .post(`${ContextPath}/post/create`)
+        .set(config)
         .attach(IMAGES_FIELD_NAME, path.join(__dirname, imageFilePath))
         .field('title', post.title)
         .field('status', post.status)
@@ -63,6 +76,7 @@ describe('Post API Endpoints', () => {
 
         const documentResponse = await supertest(app)
         .post(`${ContextPath}/file/ocr`)
+        .set(config)
         .attach(FILE_FIELD_NAME, path.join(__dirname, pdfFilePath))
         expect(documentResponse.statusCode).toBe(HttpStatus.OK)
 
@@ -74,6 +88,7 @@ describe('Post API Endpoints', () => {
 
         const response = await supertest(app)
         .post(`${ContextPath}/post/create`)
+        .set(config)
         .attach(IMAGES_FIELD_NAME, path.join(__dirname, imageFilePath))
         .field('title', post.title)
         .field('status', post.status)
@@ -88,7 +103,7 @@ describe('Post API Endpoints', () => {
         expect(isArrayOfString(body.document.title)).toBeTruthy()
 
         const fetchPost = await supertest(app)
-        .post(`${ContextPath}/post/`)
+        .post(`${ContextPath}/graphql`)
         .send({
             query: '{ post { title }}'
         })
@@ -100,6 +115,7 @@ describe('Post API Endpoints', () => {
         for (let i = 0; i < totalPost; i++){
             const documentResponse = await supertest(app)
             .post(`${ContextPath}/file/ocr`)
+            .set(config)
             .attach(FILE_FIELD_NAME, path.join(__dirname, pdfFilePath))
             expect(documentResponse.statusCode).toBe(HttpStatus.OK)
 
@@ -111,6 +127,7 @@ describe('Post API Endpoints', () => {
 
             const response = await supertest(app)
             .post(`${ContextPath}/post/create`)
+            .set(config)
             .attach(IMAGES_FIELD_NAME, path.join(__dirname, imageFilePath))
             .field('title', post.title)
             .field('status', post.status)
@@ -126,7 +143,8 @@ describe('Post API Endpoints', () => {
         }
 
         const fetchPost = await supertest(app)
-        .post(`${ContextPath}/post/`)
+        .post(`${ContextPath}/graphql`)
+        .set(config)
         .send({
             query: '{ postCount }'
         })
@@ -137,6 +155,7 @@ describe('Post API Endpoints', () => {
 
         const documentResponse = await supertest(app)
         .post(`${ContextPath}/file/ocr`)
+        .set(config)
         .attach(FILE_FIELD_NAME, path.join(__dirname, pdfFilePath))
         expect(documentResponse.statusCode).toBe(HttpStatus.OK)
 
@@ -148,6 +167,7 @@ describe('Post API Endpoints', () => {
 
         const response = await supertest(app)
         .post(`${ContextPath}/post/create`)
+        .set(config)
         .attach(IMAGES_FIELD_NAME, path.join(__dirname, imageFilePath))
         .field('title', post.title)
         .field('status', post.status)
@@ -157,6 +177,7 @@ describe('Post API Endpoints', () => {
 
         const updated = await supertest(app)
         .put(`${ContextPath}/post/update`)
+        .set(config)
         .attach(UPDATE_IMAGES_FIELD_NAME, path.join(__dirname, imageFilePath))
         .field('_id', body._id)
         .field('images', JSON.stringify([]))

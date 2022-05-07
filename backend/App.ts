@@ -5,8 +5,10 @@ import dotenv from 'dotenv'
 import PostRouter from './src/router/post.router'
 import FileRouter from './src/router/file.router'
 import AuthRouter from './src/router/auth.router'
-
+import schema from './src/graphql/index'
 import './src/auth-strategy/jwtStrategy'
+import isAuthenticated from './src/middlewares/isAuthenticated'
+import { graphqlHTTP } from 'express-graphql'
 dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 
 // declare global {
@@ -20,6 +22,7 @@ dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 
 
 export const ContextPath : String = process.env.CONTEXT_PATH ?? '/api/v1';
+
 const app : Application = express()
 
 app.use(morgan('dev'))
@@ -33,9 +36,13 @@ app.use(express.json())
 //     next()
 // })
 
-app.use(`${ContextPath}/post`, PostRouter)
+app.use(`${ContextPath}/graphql`, graphqlHTTP({
+    schema,
+    graphiql:true
+}))
+app.use(`${ContextPath}/post`, isAuthenticated, PostRouter)
 
-app.use(`${ContextPath}/file`, FileRouter)
+app.use(`${ContextPath}/file`, isAuthenticated, FileRouter)
 
 app.use(`${ContextPath}/auth`, AuthRouter)
 
@@ -43,6 +50,10 @@ app.get(`${ContextPath}/health`, (req : Request, res : Response, next : NextFunc
     return res.json({
         status:'UP'
     })
+})
+
+app.get(`${ContextPath}/jwt`, isAuthenticated, (req, res, next) => {
+    res.send(req.user)
 })
 
 export { app }

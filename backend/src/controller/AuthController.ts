@@ -14,6 +14,9 @@ export const signUp = async (req : Request, res : Response, next : NextFunction)
     }
     if (!user){
         const newUser = await User.create({firstName, lastName, email, image})
-        res.send(newUser)
+        const token = generateJwtToken(newUser._id)
+        return res.status(HttpStatus.CREATED).send({
+            accessToken:token
+        })
     }
 }

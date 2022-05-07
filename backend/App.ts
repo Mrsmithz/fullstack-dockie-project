@@ -4,7 +4,9 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import PostRouter from './src/router/post.router'
 import FileRouter from './src/router/file.router'
+import AuthRouter from './src/router/auth.router'
 
+import './src/auth-strategy/jwtStrategy'
 dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 
 // declare global {
@@ -17,7 +19,7 @@ dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 //   }
 
 
-export const ContextPath : String = '/api/v1';
+export const ContextPath : String = process.env.CONTEXT_PATH ?? '/api/v1';
 const app : Application = express()
 
 app.use(morgan('dev'))
@@ -34,6 +36,8 @@ app.use(express.json())
 app.use(`${ContextPath}/post`, PostRouter)
 
 app.use(`${ContextPath}/file`, FileRouter)
+
+app.use(`${ContextPath}/auth`, AuthRouter)
 
 app.get(`${ContextPath}/health`, (req : Request, res : Response, next : NextFunction) : Response => {
     return res.json({

@@ -4,13 +4,23 @@ import { composeMongoose } from 'graphql-compose-mongoose'
 import { schemaComposer } from 'graphql-compose'
 
 const UserSchema = new Schema({
-    firstName:String,
-    lastName:String,
-    image:{
-        type:Schema.Types.ObjectId,
-        ref:'File'
+    firstName:{
+        type: String,
+        required: true
     },
-    email:String,
+    lastName:{
+        type: String,
+        required: true
+    },
+    image:{
+        type: String,
+        required: true
+    },
+    email:{
+        type:String,
+        required:true,
+        unique:true
+    },
     followings:[
         {
             type:Schema.Types.ObjectId,
@@ -36,6 +46,7 @@ const User = model('User', UserSchema)
 const customizationOptions = {}
 const UserTC = composeMongoose(User, customizationOptions)
 
+export { User }
 schemaComposer.Query.addFields({
     userById: UserTC.mongooseResolvers.findById(),
     user: UserTC.mongooseResolvers.findOne(),

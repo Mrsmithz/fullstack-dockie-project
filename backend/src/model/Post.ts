@@ -4,7 +4,10 @@ import { composeMongoose } from 'graphql-compose-mongoose'
 import { schemaComposer } from 'graphql-compose'
 
 const PostSchema : Schema = new Schema({
-    title:String,
+    title:{
+        type: String,
+        required:true
+    },
     description:String,
     contact:String,
     tags:[
@@ -39,7 +42,8 @@ const PostSchema : Schema = new Schema({
     ratingAvg:Number,
     file:{
         type:Schema.Types.ObjectId,
-        ref:'File'
+        ref:'File',
+        required:true
     },
     images:[
         {
@@ -53,14 +57,21 @@ const PostSchema : Schema = new Schema({
             ref:'Comment'
         }
     ],
-    document:Object
+    document:{
+        type:Object,
+        required: true
+    }
 })
 PostSchema.plugin(timestamp)
 const Post = model('Post', PostSchema)
 const customizationOptions = {}
 const PostTC = composeMongoose(Post, customizationOptions)
 
-export { Post }
+export { Post, PostTC}
+
+
+
+import '../graphql/mutation/post'
 
 schemaComposer.Query.addFields({
     postById: PostTC.mongooseResolvers.findById(),
@@ -70,11 +81,9 @@ schemaComposer.Query.addFields({
 })
 
 schemaComposer.Mutation.addFields({
-    postCreateOne: PostTC.mongooseResolvers.createOne(),
-    postUpdateById: PostTC.mongooseResolvers.updateById(),
-    postUpdateOne: PostTC.mongooseResolvers.updateOne(),
-    postRemoveById: PostTC.mongooseResolvers.removeById(),
-    postRemoveOne: PostTC.mongooseResolvers.removeOne()
+    updatePostById: PostTC.getResolver('updatePostById'),
+    removePostById: PostTC.mongooseResolvers.removeById(),
+
 })
 
 const schema = schemaComposer.buildSchema()

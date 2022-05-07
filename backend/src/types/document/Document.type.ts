@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-export interface Document{
+export interface OCRDocument{
     title:string[],
     text:string,
     fileId:mongoose.Types.ObjectId,

@@ -1,10 +1,11 @@
 import {Request, Response, NextFunction} from 'express'
 import { UploadFiles } from '../types/rest/UploadFiles.type'
-import { ICreatePost } from '../types/rest/post/CreatePost.type'
+import { ICreatePost, IUpdatePost } from '../types/rest/post/RestPost.type'
 import { Post } from '../model/Post'
 import { IPost } from '../types/post/Post.type'
 import { imageUpload } from '../utils/fileUpload'
 import { HttpStatus } from '../utils/HttpStatus.enum'
+import mongoose from 'mongoose'
 
 
 const createPost = async (req : Request, res : Response, next : NextFunction) : Promise<Response> => {
@@ -51,5 +52,24 @@ const createPost = async (req : Request, res : Response, next : NextFunction) : 
     return res.status(HttpStatus.CREATED).send(created)
 
 }
+const updatePost = async (req : Request, res : Response, next : NextFunction) : Promise<Response> => {
 
-export { createPost }
+    const uploads = req.files as UploadFiles
+    const {_id, images} = req.body as IUpdatePost
+    req.body.images = JSON.parse(images)
+    if (uploads.updateImages !== undefined){
+        const imageResult = await imageUpload(uploads.updateImages)
+        if (!(imageResult instanceof Error)){
+            req.body.images.push(...imageResult)
+        }
+    }
+    const updated = await Post.findByIdAndUpdate(_id, {
+        $set: req.body,
+    },
+    {
+        returnDocument:'after'
+    })
+    return res.status(HttpStatus.OK).send(updated)
+}
+
+export { createPost, updatePost }

@@ -18,11 +18,13 @@ const PostSchema : Schema = new Schema({
     ],
     status:{
         type:String,
-        enum:['public', 'private']
+        enum:['public', 'private'],
+        required: true
     },
     owner:{
         type:Schema.Types.ObjectId,
-        ref:'User'
+        ref:'User',
+        required: true
     },
     downloadFromUser:[
         {
@@ -82,7 +84,7 @@ schemaComposer.Query.addFields({
 
 schemaComposer.Mutation.addFields({
     updatePostById: PostTC.getResolver('updatePostById'),
-    removePostById: PostTC.mongooseResolvers.removeById(),
+    removePostById: PostTC.getResolver('removePostById'),
 
 })
 

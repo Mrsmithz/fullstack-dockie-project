@@ -3,7 +3,7 @@ import { app, ContextPath} from '../../../App'
 import path from 'path'
 import { connectDB, disconnectDB, clearDB} from '../../../src/utils/db'
 import { connectGridFS, closeGridFSConnection} from '../../../src/utils/uploadsBucket'
-import { MongoMemoryServer } from 'mongodb-memory-server'
+import { MongoMemoryReplSet } from 'mongodb-memory-server'
 import { isArrayOfString } from '../../utils/utils'
 import { HttpStatus } from '../../../src/utils/HttpStatus.enum'
 import { FILE_FIELD_NAME } from '../../../src/config/fileUpload.config'
@@ -11,17 +11,23 @@ import profile from '../../utils/profile'
 const pdfFilePath = '../assets/test-pdf.pdf'
 const imageFilePath = '../assets/test-image.png'
 
-let mongo : MongoMemoryServer = null
+let mongo : MongoMemoryReplSet = null
 
 const config = {
     Authorization: ''
 }
 
-describe('Post API Endpoints', () => {
-    jest.setTimeout(30000)
+describe('OCR API', () => {
+    if (typeof process.env.JEST_TIMEOUT === 'number'){
+        jest.setTimeout(process.env.JEST_TIMEOUT)
+    }
+    else{
+        jest.setTimeout(30000)
+    }
 
     beforeAll(async () : Promise<void> => {
-        mongo = await MongoMemoryServer.create()
+        mongo = await MongoMemoryReplSet.create()
+        await mongo.waitUntilRunning()
         const uri = mongo.getUri()
         await connectDB(uri)
         await connectGridFS(uri)
@@ -42,7 +48,7 @@ describe('Post API Endpoints', () => {
         await mongo.stop()
     })
     afterEach(async () : Promise<void> => {
-        await clearDB()
+        await clearDB(['users'])
     })
     it('Should return document details', async () => {
 
@@ -55,7 +61,7 @@ describe('Post API Endpoints', () => {
         expect(body).toHaveProperty('text')
         expect(body).toHaveProperty('title')
         expect(body).toHaveProperty('fileId')
-        expect(body.text).toContain('OCR')
+        expect(body.text).toContain('Initial System Requests')
         expect(typeof body.fileId).toBe('string')
         expect(body.fileId).toHaveLength(24)
         expect(isArrayOfString(body.title)).toBeTruthy()

@@ -11,14 +11,7 @@ import isAuthenticated from './src/middlewares/isAuthenticated'
 import { graphqlHTTP } from 'express-graphql'
 dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 
-// declare global {
-//     namespace Express {
-//       interface Request {
-//         document?: Object,
-//         documentFile?: File
-//       }
-//     }
-//   }
+
 
 
 export const ContextPath : String = process.env.CONTEXT_PATH ?? '/api/v1';
@@ -36,9 +29,14 @@ app.use(express.json())
 //     next()
 // })
 
-app.use(`${ContextPath}/graphql`, graphqlHTTP({
-    schema,
-    graphiql:true
+app.use(`${ContextPath}/graphql`, isAuthenticated, graphqlHTTP((req : Request, res : Response) => {
+    return {
+        schema,
+        graphiql:true,
+        context:{
+            user: req.user
+        }
+    }
 }))
 app.use(`${ContextPath}/post`, isAuthenticated, PostRouter)
 
@@ -52,7 +50,7 @@ app.get(`${ContextPath}/health`, (req : Request, res : Response, next : NextFunc
     })
 })
 
-app.get(`${ContextPath}/jwt`, isAuthenticated, (req, res, next) => {
+app.get(`${ContextPath}/me`, isAuthenticated, (req, res, next) => {
     res.send(req.user)
 })
 

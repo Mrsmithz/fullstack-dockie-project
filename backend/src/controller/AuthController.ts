@@ -8,6 +8,7 @@ export const signUp = async (req : Request, res : Response, next : NextFunction)
     const user = await User.findOne({email})
     if (user){
         const token = generateJwtToken(user._id)
+        await User.updateOne({ email }, {firstName, lastName, image})
         return res.status(HttpStatus.OK).send({
             accessToken:token
         })

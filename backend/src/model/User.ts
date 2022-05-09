@@ -2,6 +2,8 @@ import { Schema, model } from 'mongoose'
 import timestamp from 'mongoose-timestamp'
 import { composeMongoose } from 'graphql-compose-mongoose'
 import { schemaComposer } from 'graphql-compose'
+import mongoose from 'mongoose'
+import CustomerUser from '../types/user/User.type'
 
 const UserSchema = new Schema({
     firstName:{
@@ -41,10 +43,19 @@ const UserSchema = new Schema({
     ]
 })
 
+
 UserSchema.plugin(timestamp)
 const User = model('User', UserSchema)
 const customizationOptions = {}
 const UserTC = composeMongoose(User, customizationOptions)
+
+declare global {
+    namespace Express {
+      interface User extends CustomerUser{
+
+      }
+    }
+  }
 
 export { User }
 

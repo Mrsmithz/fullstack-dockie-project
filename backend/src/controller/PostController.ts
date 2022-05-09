@@ -5,13 +5,13 @@ import { Post } from '../model/Post'
 import { IPost } from '../types/post/Post.type'
 import { imageUpload } from '../utils/fileUpload'
 import { HttpStatus } from '../utils/HttpStatus.enum'
-import mongoose from 'mongoose'
+import { User } from '../model/User'
+import mongoose, {ClientSession} from 'mongoose'
 
 
 const createPost = async (req : Request, res : Response, next : NextFunction) : Promise<Response> => {
     const uploads = req.files as UploadFiles
     const {title, description, contact, status, document} = req.body as ICreatePost
-
     const imageResult = await imageUpload(uploads.images)
 
     if (imageResult instanceof Error){
@@ -26,6 +26,7 @@ const createPost = async (req : Request, res : Response, next : NextFunction) : 
             description,
             contact,
             status,
+            owner:req.user._id,
             file: documentJSON.fileId,
             images: imageResult,
             document:{
@@ -33,8 +34,26 @@ const createPost = async (req : Request, res : Response, next : NextFunction) : 
                 title: documentJSON.title
             }
         }
-        const created = await Post.create(post)
-        return res.status(HttpStatus.CREATED).send(created)
+        let session : ClientSession = null
+        try{
+            session = await mongoose.startSession()
+            session.startTransaction()
+            const createdPost = await Post.create([ post ], { session })
+            await User.updateOne({_id:post.owner}, {
+                $push : { posts : createdPost }
+            }, { session })
+            await session.commitTransaction()
+            return res.status(HttpStatus.CREATED).send(createdPost)
+
+        }
+        catch(err){
+            console.error(err)
+            await session.abortTransaction()
+            return res.status(HttpStatus.BAD_REQUEST)
+        }
+        finally{
+            await session.endSession()
+        }
     }
     const post : IPost = {
         title,

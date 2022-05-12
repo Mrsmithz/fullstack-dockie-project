@@ -9,6 +9,7 @@ import schema from './src/graphql/index'
 import './src/auth-strategy/jwtStrategy'
 import isAuthenticated from './src/middlewares/isAuthenticated'
 import { graphqlHTTP } from 'express-graphql'
+import {getGridFSFile, isFileExist} from './src/utils/uploadsBucket'
 dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 
 
@@ -40,7 +41,7 @@ app.use(`${ContextPath}/graphql`, isAuthenticated, graphqlHTTP((req : Request, r
 }))
 app.use(`${ContextPath}/post`, isAuthenticated, PostRouter)
 
-app.use(`${ContextPath}/file`, isAuthenticated, FileRouter)
+app.use(`${ContextPath}/file`, FileRouter)
 
 app.use(`${ContextPath}/auth`, AuthRouter)
 
@@ -53,5 +54,4 @@ app.get(`${ContextPath}/health`, (req : Request, res : Response, next : NextFunc
 app.get(`${ContextPath}/me`, isAuthenticated, (req, res, next) => {
     res.send(req.user)
 })
-
 export { app }

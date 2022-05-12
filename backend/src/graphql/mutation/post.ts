@@ -2,7 +2,7 @@ import { PostTC } from "../../model/Post"
 import { Post } from "../../model/Post"
 import mongoose, { ClientSession } from "mongoose"
 import { User } from "../../model/User"
-import { ImageUploadBucket, FileUploadBucket} from "../../utils/uploadsBucket"
+import { getFileUploadBucket, getImageUploadBucket} from "../../utils/uploadsBucket"
 export const updatePostById = PostTC.addResolver({
     name:'updatePostById',
     kind:'mutation',
@@ -48,9 +48,9 @@ export const removePostById = PostTC.addResolver({
                     posts : _id
                 }
             }, { session })
-            await FileUploadBucket.delete(removedPost.file)
+            await getFileUploadBucket().delete(removedPost.file)
             await Promise.all(removedPost.images.map(async (image : mongoose.Types.ObjectId) => {
-                return await ImageUploadBucket.delete(image)
+                return await getImageUploadBucket().delete(image)
             }))
             await session.commitTransaction()
             return removedPost

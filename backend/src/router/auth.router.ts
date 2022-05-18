@@ -1,8 +1,8 @@
 import { Router } from "express"
-import { signUp } from "../controller/AuthController"
+import { login } from "../controller/AuthController"
 
 const router : Router = Router()
 
-router.post('/signup', signUp)
+router.post('/login', login)
 
 export default router

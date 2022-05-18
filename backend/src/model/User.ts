@@ -57,7 +57,7 @@ declare global {
     }
   }
 
-export { User }
+export { User, UserTC}
 
 schemaComposer.Query.addFields({
     userById: UserTC.mongooseResolvers.findById(),

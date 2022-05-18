@@ -70,24 +70,3 @@ const customizationOptions = {}
 const PostTC = composeMongoose(Post, customizationOptions)
 
 export { Post, PostTC}
-
-
-
-import '../graphql/mutation/post'
-
-schemaComposer.Query.addFields({
-    postById: PostTC.mongooseResolvers.findById(),
-    post: PostTC.mongooseResolvers.findOne(),
-    posts: PostTC.mongooseResolvers.findMany(),
-    postCount: PostTC.mongooseResolvers.count()
-})
-
-schemaComposer.Mutation.addFields({
-    updatePostById: PostTC.getResolver('updatePostById'),
-    removePostById: PostTC.getResolver('removePostById'),
-
-})
-
-const schema = schemaComposer.buildSchema()
-
-export default schema

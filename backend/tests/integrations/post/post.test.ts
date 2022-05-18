@@ -41,7 +41,7 @@ describe('Post API', () => {
         await connectGridFS(uri)
 
         const response = await supertest(app)
-        .post(`${ContextPath}/auth/signup`)
+        .post(`${ContextPath}/auth/login`)
         .send({
             ...profile
         })

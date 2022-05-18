@@ -3,7 +3,7 @@ import { ISignup } from '../types/rest/user/SignUp.type'
 import { User } from '../model/User'
 import { HttpStatus } from '../utils/HttpStatus.enum'
 import { generateJwtToken } from '../utils/jwtUtils'
-export const signUp = async (req : Request, res : Response, next : NextFunction) : Promise<Response> => {
+export const login = async (req : Request, res : Response, next : NextFunction) : Promise<Response> => {
     const {firstName, lastName, email, image} : ISignup = req.body
     const user = await User.findOne({email})
     if (user){

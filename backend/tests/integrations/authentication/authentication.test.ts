@@ -39,7 +39,7 @@ describe('Authentication API', () => {
     it('Should return JWT Token', async () => {
 
         const response = await supertest(app)
-        .post(`${ContextPath}/auth/signup`)
+        .post(`${ContextPath}/auth/login`)
         .send({
             ...profile
         })
@@ -51,7 +51,7 @@ describe('Authentication API', () => {
     })
     it('Should return correct User', async () => {
         const response = await supertest(app)
-        .post(`${ContextPath}/auth/signup`)
+        .post(`${ContextPath}/auth/login`)
         .send({
             ...profile
         })
@@ -72,7 +72,7 @@ describe('Authentication API', () => {
 
     it('Should return JWT Token for exist user', async () => {
         const response = await supertest(app)
-        .post(`${ContextPath}/auth/signup`)
+        .post(`${ContextPath}/auth/login`)
         .send({
             ...profile
         })
@@ -81,7 +81,7 @@ describe('Authentication API', () => {
         expect(body).toHaveProperty('accessToken')
 
         const getJwt = await supertest(app)
-        .post(`${ContextPath}/auth/signup`)
+        .post(`${ContextPath}/auth/login`)
         .send({
             ...profile
         })

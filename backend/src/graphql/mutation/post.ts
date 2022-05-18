@@ -3,7 +3,9 @@ import { Post } from "../../model/Post"
 import mongoose, { ClientSession } from "mongoose"
 import { User } from "../../model/User"
 import { getFileUploadBucket, getImageUploadBucket} from "../../utils/uploadsBucket"
-export const updatePostById = PostTC.addResolver({
+
+
+PostTC.addResolver({
     name:'updatePostById',
     kind:'mutation',
     type:PostTC.getType(),
@@ -25,7 +27,7 @@ export const updatePostById = PostTC.addResolver({
     }
 })
 
-export const removePostById = PostTC.addResolver({
+PostTC.addResolver({
     name:'removePostById',
     kind:'mutation',
     type:PostTC.getType(),
@@ -65,3 +67,6 @@ export const removePostById = PostTC.addResolver({
         }
     },
 })
+
+export const updatePostById = PostTC.getResolver('updatePostById')
+export const removePostById = PostTC.getResolver('removePostById')

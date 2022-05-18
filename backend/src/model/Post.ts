@@ -21,7 +21,7 @@ const PostSchema : Schema = new Schema({
         enum:['public', 'private'],
         required: true
     },
-    owner:{
+    authorId:{
         type:Schema.Types.ObjectId,
         ref:'User',
         required: true

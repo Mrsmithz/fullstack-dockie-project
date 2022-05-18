@@ -30,7 +30,7 @@ app.use(express.json())
 //     next()
 // })
 
-app.use(`${ContextPath}/graphql`, isAuthenticated, graphqlHTTP((req : Request, res : Response) => {
+app.use(`${ContextPath}/graphql`, graphqlHTTP((req : Request, res : Response) => {
     return {
         schema,
         graphiql:true,

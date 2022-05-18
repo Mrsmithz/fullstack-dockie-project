@@ -8,7 +8,7 @@ export interface IPost {
     contact?:string,
     tags?:string[],
     status:Status,
-    owner?:mongoose.Types.ObjectId
+    authorId?:mongoose.Types.ObjectId
     file:mongoose.Types.ObjectId,
     images:mongoose.Types.ObjectId[],
     document?:Object

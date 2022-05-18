@@ -26,7 +26,7 @@ const createPost = async (req : Request, res : Response, next : NextFunction) : 
             description,
             contact,
             status,
-            owner:req.user._id,
+            authorId:req.user._id,
             file: documentJSON.fileId,
             images: imageResult,
             document:{
@@ -39,7 +39,7 @@ const createPost = async (req : Request, res : Response, next : NextFunction) : 
             session = await mongoose.startSession()
             session.startTransaction()
             const createdPost = await Post.create([ post ], { session })
-            await User.updateOne({_id:post.owner}, {
+            await User.updateOne({_id:post.authorId}, {
                 $push : { posts : createdPost }
             }, { session })
             await session.commitTransaction()

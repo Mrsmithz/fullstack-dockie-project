@@ -21,7 +21,7 @@ const createPost = async (req : Request, res : Response, next : NextFunction) : 
     }
     if (typeof document === 'string'){
         const documentJSON = JSON.parse(document)
-        const post : IPost = {
+        const post = {
             title,
             description,
             contact,
@@ -55,7 +55,7 @@ const createPost = async (req : Request, res : Response, next : NextFunction) : 
             await session.endSession()
         }
     }
-    const post : IPost = {
+    const post = {
         title,
         description,
         contact,

@@ -9,6 +9,8 @@ import schema from './src/graphql/index'
 import './src/auth-strategy/jwtStrategy'
 import isAuthenticated from './src/middlewares/isAuthenticated'
 import { graphqlHTTP } from 'express-graphql'
+import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core'
+import { ApolloServer } from 'apollo-server-express'
 
 dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 
@@ -30,15 +32,15 @@ app.use(express.json())
 //     next()
 // })
 
-app.use(`${ContextPath}/graphql`, graphqlHTTP((req : Request, res : Response) => {
-    return {
-        schema,
-        graphiql:true,
-        context:{
-            user: req.user
-        }
-    }
-}))
+// app.use(`${ContextPath}/graphql`, isAuthenticated, graphqlHTTP((req : Request, res : Response) => {
+//     return {
+//         schema,
+//         graphiql:true,
+//         context:{
+//             user: req.user
+//         }
+//     }
+// }))
 app.use(`${ContextPath}/post`, isAuthenticated, PostRouter)
 
 app.use(`${ContextPath}/file`, isAuthenticated, FileRouter)
@@ -53,5 +55,25 @@ app.get(`${ContextPath}/health`, (req : Request, res : Response, next : NextFunc
 
 app.get(`${ContextPath}/me`, isAuthenticated, (req, res, next) => {
     res.send(req.user)
+})
+app.use(`${ContextPath}/graphql`, isAuthenticated)
+
+const apolloServer = new ApolloServer({
+    schema,
+    introspection: true,
+    plugins:[
+        ApolloServerPluginLandingPageGraphQLPlayground()
+    ],
+    context: ({ req }) => {
+        return {
+            user: req.user
+        }
+    }
+})
+apolloServer.start().then(()  => {
+    apolloServer.applyMiddleware({
+        app,
+        path: `${ContextPath}/graphql`
+    })
 })
 export { app }

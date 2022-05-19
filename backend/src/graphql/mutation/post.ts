@@ -1,11 +1,11 @@
-import { PostTC } from "../../model/Post"
-import { Post } from "../../model/Post"
+import { PostTC, Post } from "../../model/Post"
 import mongoose, { ClientSession } from "mongoose"
 import { User } from "../../model/User"
 import { getFileUploadBucket, getImageUploadBucket} from "../../utils/uploadsBucket"
+import { schemaComposer } from 'graphql-compose'
 
 
-PostTC.addResolver({
+export const updatePostById = schemaComposer.createResolver({
     name:'updatePostById',
     kind:'mutation',
     type:PostTC.getType(),
@@ -15,6 +15,7 @@ PostTC.addResolver({
         description: `String`,
         contact: `String`,
         status: `enum Status { private public }`,
+        tagId: `[MongoID]`
     },
     resolve: async ({ args }) => {
         const { _id } = args
@@ -27,7 +28,7 @@ PostTC.addResolver({
     }
 })
 
-PostTC.addResolver({
+export const removePostById = schemaComposer.createResolver({
     name:'removePostById',
     kind:'mutation',
     type:PostTC.getType(),
@@ -68,5 +69,5 @@ PostTC.addResolver({
     },
 })
 
-export const updatePostById = PostTC.getResolver('updatePostById')
-export const removePostById = PostTC.getResolver('removePostById')
+// export const updatePostById = PostTC.getResolver('updatePostById')
+// export const removePostById = PostTC.getResolver('removePostById')

@@ -7,7 +7,7 @@ export interface ICreatePost{
     description?:string,
     contact?:string,
     status:Status,
-    tags?:string[],
+    tagId?:mongoose.Types.ObjectId[],
     document:OCRDocument
 }
 
@@ -17,7 +17,7 @@ export interface IUpdatePost{
     description?:string,
     contact?:string,
     status?:Status,
-    tags?:string
+    tagId?:mongoose.Types.ObjectId[],
     document?:OCRDocument,
     images:string
 }

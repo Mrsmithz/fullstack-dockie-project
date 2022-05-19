@@ -20,6 +20,8 @@
   "homepage": "https://github.com/Mrsmithz/Project-SW-Dev-and-Env#readme",
   "dependencies": {
     "@google-cloud/documentai": "^3.2.1",
+    "apollo-server-core": "^3.7.0",
+    "apollo-server-express": "^3.7.0",
     "cors": "^2.8.5",
     "express": "^4.17.2",
     "express-graphql": "^0.12.0",

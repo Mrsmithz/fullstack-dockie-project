@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose'
-import timestamp from 'mongoose-timestamp'
 import { composeMongoose } from 'graphql-compose-mongoose'
 import { schemaComposer } from 'graphql-compose'
 
@@ -10,7 +9,7 @@ const PostSchema : Schema = new Schema({
     },
     description:String,
     contact:String,
-    tags:[
+    tagId:[
         {
             type:Schema.Types.ObjectId,
             ref:'Tag'
@@ -63,8 +62,7 @@ const PostSchema : Schema = new Schema({
         type:Object,
         required: true
     }
-})
-PostSchema.plugin(timestamp)
+}, { timestamps:true })
 const Post = model('Post', PostSchema)
 const customizationOptions = {}
 const PostTC = composeMongoose(Post, customizationOptions)

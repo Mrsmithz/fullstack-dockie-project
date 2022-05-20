@@ -2,9 +2,10 @@ import { PostTC, Post } from "../../model/Post"
 import mongoose, { ClientSession } from "mongoose"
 import { User } from "../../model/User"
 import { getFileUploadBucket, getImageUploadBucket} from "../../utils/uploadsBucket"
-import { schemaComposer } from 'graphql-compose'
-
-
+import { schemaComposer, ResolverResolveParams} from 'graphql-compose'
+import { IAddRatingArgs, IUpdatePostArgs, IRemovePostArgs} from "../../types/graphql/post.type"
+import { IGraphqlContext } from "../../types/index.type"
+import { IRating, IPost} from "../../types/post/Post.type"
 export const updatePostById = schemaComposer.createResolver({
     name:'updatePostById',
     kind:'mutation',
@@ -17,7 +18,7 @@ export const updatePostById = schemaComposer.createResolver({
         status: `enum Status { private public }`,
         tagId: `[MongoID]`
     },
-    resolve: async ({ args }) => {
+    resolve: async ({ args } : ResolverResolveParams<IPost, IGraphqlContext, IUpdatePostArgs>) : Promise<IPost> => {
         const { _id } = args
         const updated = await Post.findByIdAndUpdate(_id, {
             $set:args
@@ -35,7 +36,7 @@ export const removePostById = schemaComposer.createResolver({
     args:{
         _id :`MongoID!`
     },
-    resolve: async ({ args, context }) => {
+    resolve: async ({ args, context } : ResolverResolveParams<IPost, IGraphqlContext, IRemovePostArgs>) : Promise<IPost> => {
         const { user } = context
         const { _id } = args
         let session : ClientSession = null
@@ -69,5 +70,55 @@ export const removePostById = schemaComposer.createResolver({
     },
 })
 
-// export const updatePostById = PostTC.getResolver('updatePostById')
-// export const removePostById = PostTC.getResolver('removePostById')
+const RatingPayloadOTC = schemaComposer.createObjectTC({
+    name: 'RatingPayload',
+    fields: {
+      userId: 'MongoID!',
+      rating: 'Float!'
+    },
+})
+
+export const addRating = schemaComposer.createResolver({
+    name:'addRating',
+    kind:'mutation',
+    type:RatingPayloadOTC,
+    args: {
+        postId: 'MongoID!',
+        rating: 'Float!'
+    },
+    resolve: async ({args, context} : ResolverResolveParams<IRating, IGraphqlContext, IAddRatingArgs>) : Promise<IRating> => {
+        const { postId, rating} = args
+        const { user : {_id : userId}} = context
+        const ratingObj = {
+            rating,
+            userId
+        }
+        let session : ClientSession = null
+        try{
+            session = await mongoose.startSession()
+            session.startTransaction()
+            await Post.updateOne({_id:postId}, {
+                $pull:{
+                    ratings: { userId }
+                }
+            }, { session })
+            await Post.updateOne({_id:postId}, {
+                $push: { ratings : ratingObj}
+            }, { session })
+            await session.commitTransaction()
+
+            return {
+                userId,
+                rating
+            }
+        }
+        catch(e){
+            console.error(e)
+            await session.abortTransaction()
+            throw new Error('Server error')
+        }
+        finally{
+            await session.endSession()
+        }
+    }
+})

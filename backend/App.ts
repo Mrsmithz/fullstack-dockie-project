@@ -8,9 +8,9 @@ import AuthRouter from './src/router/auth.router'
 import schema from './src/graphql/index'
 import './src/auth-strategy/jwtStrategy'
 import isAuthenticated from './src/middlewares/isAuthenticated'
-import { graphqlHTTP } from 'express-graphql'
-import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core'
+import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core'
 import { ApolloServer } from 'apollo-server-express'
+import { createPrometheusExporterPlugin } from '@bmatei/apollo-prometheus-exporter'
 
 dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 
@@ -19,7 +19,7 @@ dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 
 export const ContextPath : String = process.env.CONTEXT_PATH ?? '/api/v1';
 
-const app : Application = express()
+const app = express()
 
 app.use(morgan('dev'))
 app.use(cors())
@@ -62,7 +62,8 @@ const apolloServer = new ApolloServer({
     schema,
     introspection: true,
     plugins:[
-        ApolloServerPluginLandingPageGraphQLPlayground()
+        ApolloServerPluginLandingPageGraphQLPlayground(),
+        createPrometheusExporterPlugin({ app })
     ],
     context: ({ req }) => {
         return {

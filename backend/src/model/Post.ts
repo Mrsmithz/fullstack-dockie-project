@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
 import { composeMongoose } from 'graphql-compose-mongoose'
 import { schemaComposer } from 'graphql-compose'
-
+import { IPost } from '../types/post/Post.type'
 const PostSchema : Schema = new Schema({
     title:{
         type: String,
@@ -33,14 +33,16 @@ const PostSchema : Schema = new Schema({
     ],
     ratings:[
         {
-            user:{
+            userId:{
                 type:Schema.Types.ObjectId,
                 ref:'User'
             },
-            rating:Number
+            rating:{
+                type: Number,
+                max: 5
+            }
         }
     ],
-    ratingAvg:Number,
     file:{
         type:Schema.Types.ObjectId,
         ref:'File',
@@ -63,7 +65,7 @@ const PostSchema : Schema = new Schema({
         required: true
     }
 }, { timestamps:true })
-const Post = model('Post', PostSchema)
+const Post = model<IPost>('Post', PostSchema)
 const customizationOptions = {}
 const PostTC = composeMongoose(Post, customizationOptions)
 

@@ -1,4 +1,4 @@
-import { Grid, GridItem, Flex, Stack, Text, useColorModeValue } from '@chakra-ui/react'
+import { Grid, GridItem, Flex, Stack, Text, Image } from '@chakra-ui/react'
 import { StarIcon } from '@chakra-ui/icons'
 
 import styles from '../../styles/Home.module.scss'
@@ -31,12 +31,12 @@ const NewestPostList = ({ posts }: Props) => {
   return (
     <>
       {posts.map((item, index) => (
-        <Link href={ `/post/${index}`} passHref key={`newest-${index}`}>
+        <Link href={ `/post/${item._id}`} passHref key={item._id}>
           <Grid templateColumns='repeat(12, 1fr)' className={styles.newestPostBox}>
 
             <GridItem colSpan={2}>
               <Flex justify="center" align="center" height="100%">
-                <img src={item.imgUrl} className={styles.newestPostImage} />
+                <Image src={item.imgUrl} className={styles.newestPostImage} alt="image"/>
               </Flex>
             </GridItem>
 

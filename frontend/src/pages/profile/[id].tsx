@@ -17,10 +17,6 @@ query ($id: MongoID!){
       followings
       posts
       image
-      postsDetail{
-        _id
-        title
-      }
     }
   }
 `

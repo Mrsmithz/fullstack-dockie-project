@@ -16,6 +16,7 @@ const ProfileDetail = ({ profile }: Props) => {
     const backgroundCollectoins = useColorModeValue("blue.300", "gray.700")
     const [followButton, setFollowButton] = useState(true)
     const followUser = useCallback(async (profile) => {
+        setFollowButton(false)
         toast({
             title: `Follow ${profile.firstName}`,
             status: 'success',
@@ -80,12 +81,12 @@ const ProfileDetail = ({ profile }: Props) => {
             >
                 <Text fontSize={{ base: 25, lg: 30 }}>Collections</Text>
                 <Grid templateColumns="repeat(12, 1fr)" gap={{ base: 3, lg: 10 }} mt={5}>
-                    {profile?.postsDetail.map((post: Post) => (
-                        <GridItem colSpan={{ base: 6, lg: 3 }} key={post._id}>
-                            <Link href={"/post/" + post._id} passHref>
+                    {profile?.posts.map((post: string) => (
+                        <GridItem colSpan={{ base: 6, lg: 3 }} key={post}>
+                            <Link href={"/post/" + post} passHref>
                                 <Button bg={backgroundCollectoins} w={"100%"} h={{ base: 200, lg: 300 }} borderRadius={20}>
                                     <Center>
-                                        <Text fontSize={25}>{post.title}</Text>
+                                        <Text fontSize={25}>{post}</Text>
                                     </Center>
                                 </Button>
                             </Link>

@@ -1,4 +1,4 @@
-import { Center, Flex, Grid, GridItem, Text, useColorModeValue, Image, Button, Box } from "@chakra-ui/react";
+import { Center, Flex, Grid, GridItem, Text, useColorModeValue, Image, Button, Box, useToast } from "@chakra-ui/react";
 import React, { useCallback, useState } from "react";
 import Link from "next/link"
 import { Profile } from "../../types/Profile";
@@ -11,14 +11,26 @@ type Props = {
 }
 
 const ProfileDetail = ({ profile }: Props) => {
+    const toast = useToast()
     const backgroundProfileDetailColor = useColorModeValue("blue.100", "gray.500")
     const backgroundCollectoins = useColorModeValue("blue.300", "gray.700")
     const [followButton, setFollowButton] = useState(true)
-    const followUser = useCallback(async () => {
-        setFollowButton(false)
+    const followUser = useCallback(async (profile) => {
+        toast({
+            title: `Follow ${profile.firstName}`,
+            status: 'success',
+            duration: 4000,
+            isClosable: true,
+        })
     }, [])
     const unFollowUser = useCallback(() => {
         setFollowButton(true)
+        toast({
+            title: `Un follow ${profile.firstName}`,
+            status: 'error',
+            duration: 4000,
+            isClosable: true,
+        })
     }, [])
     return (
         <>
@@ -50,7 +62,7 @@ const ProfileDetail = ({ profile }: Props) => {
                         </Center>
                         <Center mt={5}>
                             {followButton && (
-                                <Button colorScheme="blue" variant="solid" onClick={() => followUser()}>+ Follow</Button>
+                                <Button colorScheme="blue" variant="solid" onClick={() => followUser(profile)}>+ Follow</Button>
                             )}
                             {!followButton && (
                                 <Button colorScheme="red" variant="solid" onClick={() => unFollowUser()}>Un follow</Button>

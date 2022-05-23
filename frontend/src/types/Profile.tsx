@@ -5,5 +5,6 @@ export type Profile = {
     followings: string[],
     posts: string[],
     image: string,
-    postsDetail: Post[]
+    postsDetail: Post[],
+    email: string
 }

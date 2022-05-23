@@ -1,16 +1,25 @@
 import { Center, Flex, Grid, GridItem, Text, useColorModeValue, Image, Button, Box } from "@chakra-ui/react";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import Link from "next/link"
 import { Profile } from "../../types/Profile";
+import { Post } from "../../types/Post";
 const size = { base: "100%", md: "80%", lg: "60%" };
 
 
 type Props = {
-    profile: Profile
+    profile: Profile,
 }
+
 const ProfileDetail = ({ profile }: Props) => {
     const backgroundProfileDetailColor = useColorModeValue("blue.100", "gray.500")
     const backgroundCollectoins = useColorModeValue("blue.300", "gray.700")
+    const [followButton, setFollowButton] = useState(true)
+    const followUser = useCallback(async () => {
+        setFollowButton(false)
+    }, [])
+    const unFollowUser = useCallback(() => {
+        setFollowButton(true)
+    }, [])
     return (
         <>
             <Center
@@ -37,10 +46,15 @@ const ProfileDetail = ({ profile }: Props) => {
                             <Text fontSize={{ base: 30, lg: 50 }} >{profile?.firstName} {profile?.lastName}</Text>
                         </Center>
                         <Center>
-                            <Text fontSize={20}>{profile?.posts.length} Post {profile?.followings.length} Following</Text>
+                            <Text fontSize={20}>{profile?.posts.length} Post {profile?.followings.length} Followings</Text>
                         </Center>
                         <Center mt={5}>
-                            <Button colorScheme="blue" variant="solid">+ Follow</Button>
+                            {followButton && (
+                                <Button colorScheme="blue" variant="solid" onClick={() => followUser()}>+ Follow</Button>
+                            )}
+                            {!followButton && (
+                                <Button colorScheme="red" variant="solid" onClick={() => unFollowUser()}>Un follow</Button>
+                            )}
                         </Center>
                     </GridItem>
                 </Grid>
@@ -54,12 +68,12 @@ const ProfileDetail = ({ profile }: Props) => {
             >
                 <Text fontSize={{ base: 25, lg: 30 }}>Collections</Text>
                 <Grid templateColumns="repeat(12, 1fr)" gap={{ base: 3, lg: 10 }} mt={5}>
-                    {profile?.posts.map((id: string) => (
-                        <GridItem colSpan={{ base: 6, lg: 3 }} key={id}>
-                            <Link href={"/post/" + id} passHref>
+                    {profile?.postsDetail.map((post: Post) => (
+                        <GridItem colSpan={{ base: 6, lg: 3 }} key={post._id}>
+                            <Link href={"/post/" + post._id} passHref>
                                 <Button bg={backgroundCollectoins} w={"100%"} h={{ base: 200, lg: 300 }} borderRadius={20}>
                                     <Center>
-                                        <Text fontSize={15}>{id}</Text>
+                                        <Text fontSize={25}>{post.title}</Text>
                                     </Center>
                                 </Button>
                             </Link>

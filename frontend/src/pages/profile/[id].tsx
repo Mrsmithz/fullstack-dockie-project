@@ -17,11 +17,15 @@ query ($id: MongoID!){
       followings
       posts
       image
+      postsDetail{
+        _id
+        title
+      }
     }
   }
 `
 const ProfilePage: NextPage<Props> = ({ id }) => {
-    const {loading, error, data} = useQuery(GET_PROFILE_BY_ID, {
+    const {loading, error, data, refetch} = useQuery(GET_PROFILE_BY_ID, {
         variables: { id }
     })
     return (

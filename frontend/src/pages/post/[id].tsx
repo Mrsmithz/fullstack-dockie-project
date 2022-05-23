@@ -119,6 +119,12 @@ const GET_POST_BY_ID = gql`
             title,
             document,
             status
+            authorId
+            author{
+                firstName
+                lastName
+                email
+              }
         }
     }
 `
@@ -151,7 +157,7 @@ const PostDetailPage: NextPage<Props> = ({ id }) => {
             </Head>
             <Stack className={styles.container}>
                 <PostDetail
-                    Detail={data?.postById}
+                    post={data?.postById}
                     postData={postData[1]}
                     addComment={(newComment: string) => addComment(newComment)}
                     ratePost={(newRating: number) => ratePost(newRating)}

@@ -4,5 +4,7 @@ export type CreatedPost = {
   contact: string;
   tag: string[];
   permission: string;
-  image: File[];
+  image: File[]
+  titleOcr:string
+  titleType:string
 }

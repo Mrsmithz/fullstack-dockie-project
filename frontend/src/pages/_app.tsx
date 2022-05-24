@@ -6,6 +6,8 @@ import { extendTheme } from "@chakra-ui/react";
 import "@fontsource/prompt/400.css"
 import client from '../utils/apollo-client'
 import { ApolloProvider } from '@apollo/client'
+import { SessionProvider } from "next-auth/react"
+import CustomApolloProvider from "../components/context/CustomApolloProvider"
 
 function MyApp({ Component, pageProps }: AppProps) {
   const theme = extendTheme({
@@ -14,12 +16,14 @@ function MyApp({ Component, pageProps }: AppProps) {
     },
   });
   return (
-    <ApolloProvider client={client}>
-      <ChakraProvider theme={theme}>
-        <Navbar />
-        <Component {...pageProps} />
-      </ChakraProvider>
-    </ApolloProvider>
+    <SessionProvider>
+      <CustomApolloProvider>
+        <ChakraProvider theme={theme}>
+          <Navbar />
+          <Component {...pageProps} />
+        </ChakraProvider>
+      </CustomApolloProvider>
+    </SessionProvider>
   );
 }
 

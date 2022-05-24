@@ -2,6 +2,8 @@ import { Post, PostTC } from "../../model/Post"
 import { UserTC } from "../../model/User"
 import { TagTC, Tag} from '../../model/Tag'
 import { IPost } from "../../types/post/Post.type"
+import { CommentTC } from '../../model/Comment'
+
 PostTC.addRelation(
     'author',
     {
@@ -25,6 +27,18 @@ PostTC.addRelation(
         }
     }
 )
+PostTC.addRelation(
+    'comments',
+    {
+        resolver: () => CommentTC.mongooseResolvers.findMany(),
+        projection: { _id : true},
+        prepareArgs:{
+            filter : (post) => {
+                return { postId : post._id}
+            }
+        }
+    }
+)
 
 PostTC.addFields({
     ratingAvg : {
@@ -34,7 +48,7 @@ PostTC.addFields({
             const ratingAvg = post.ratings.reduce((prev, curr) => {
                 return prev += curr.rating
             }, 0)
-            
+
             if (isNaN(ratingAvg / post.ratings.length)) return 0
 
             return ratingAvg / post.ratings.length

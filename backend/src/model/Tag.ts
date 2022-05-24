@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose'
 import { composeMongoose } from 'graphql-compose-mongoose'
-
+import { ITag } from '../types/tag/tag.type'
 const TagSchema = new Schema({
     name:{
         type: String,
@@ -12,7 +12,7 @@ const TagSchema = new Schema({
     }
 }, {timestamps: true})
 
-const Tag = model('Tag', TagSchema)
+const Tag = model<ITag>('Tag', TagSchema)
 const customizationOptions = {}
 const TagTC = composeMongoose(Tag, customizationOptions)
 

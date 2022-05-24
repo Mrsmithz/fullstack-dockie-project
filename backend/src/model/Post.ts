@@ -23,14 +23,9 @@ const PostSchema : Schema = new Schema({
     authorId:{
         type:Schema.Types.ObjectId,
         ref:'User',
-        required: true
+        required: true,
+        index:true
     },
-    downloadFromUser:[
-        {
-            type:Schema.Types.ObjectId,
-            ref:'User'
-        }
-    ],
     ratings:[
         {
             userId:{
@@ -39,6 +34,7 @@ const PostSchema : Schema = new Schema({
             },
             rating:{
                 type: Number,
+                min: 0,
                 max: 5
             }
         }
@@ -52,12 +48,6 @@ const PostSchema : Schema = new Schema({
         {
             type:Schema.Types.ObjectId,
             ref:'File'
-        }
-    ],
-    comments:[
-        {
-            type:Schema.Types.ObjectId,
-            ref:'Comment'
         }
     ],
     document:{

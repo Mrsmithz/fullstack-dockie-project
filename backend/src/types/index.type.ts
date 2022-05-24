@@ -1,9 +1,9 @@
 import { JwtPayload } from 'jsonwebtoken'
 import { Schema } from 'mongoose'
-import CustomUser from './user/User.type'
+import { IUser } from './user/User.type'
 declare global {
     namespace Express {
-      interface User extends CustomUser{
+      interface User extends IUser{
 
       }
     }

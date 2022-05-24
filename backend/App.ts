@@ -32,15 +32,6 @@ app.use(express.json())
 //     next()
 // })
 
-// app.use(`${ContextPath}/graphql`, isAuthenticated, graphqlHTTP((req : Request, res : Response) => {
-//     return {
-//         schema,
-//         graphiql:true,
-//         context:{
-//             user: req.user
-//         }
-//     }
-// }))
 app.use(`${ContextPath}/post`, isAuthenticated, PostRouter)
 
 app.use(`${ContextPath}/file`, isAuthenticated, FileRouter)

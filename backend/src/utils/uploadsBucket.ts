@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
-import { GridFSBucket } from "mongoose/node_modules/mongodb"
-import {NextFunction, Request, Response} from 'express'
+import { GridFSBucket, GridFSFile} from "mongoose/node_modules/mongodb"
+import { NextFunction, Request, Response } from 'express'
 import { HttpStatus } from "./HttpStatus.enum"
 
 let FileUploadBucket : GridFSBucket
@@ -34,12 +34,16 @@ export const connectGridFS = (uri : string) => {
 export const closeGridFSConnection = async () => {
     return await conn.close()
 }
+const setDownloadableHeader = (res : Response, file : GridFSFile) => {
+    res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`)
+}
 
 export const getGridFSFile = async (req : Request, res : Response) => {
     try{
         const fileId = new mongoose.Types.ObjectId(req.params?.id)
         const checkFiles = await getFileUploadBucket().find({_id : fileId}).toArray()
         if (checkFiles.length){
+            setDownloadableHeader(res, checkFiles[0])
             return getFileUploadBucket().openDownloadStream(new mongoose.Types.ObjectId(fileId)).pipe(res)
         }
         const checkImages = await getImageUploadBucket().find({_id : fileId}).toArray()

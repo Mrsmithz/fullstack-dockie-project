@@ -68,7 +68,7 @@ const CreatePost: NextPage = () => {
     console.log(file)
     const formData = new FormData()
     formData.append("file", file!)
-    axios.defaults.headers.common["Authorization"] = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyODkyNTg2MjY2OWU1ZjE1Mjc0ZjIyMyIsImlhdCI6MTY1MzE1NTIwNiwiZXhwIjoxNjUzNzYwMDA2fQ.DsrAnvsVTbgXUbVbpMRkX0gsqiD4-TlBuerVpNu4yBw`
+    axios.defaults.headers.common["Authorization"] = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOGI4YjE0MWZhMTYxNzE2N2QzODk5OSIsImlhdCI6MTY1MzQ2MjY4MywiZXhwIjoxNjU0MDY3NDgzfQ.lzAsjeaxXf_r3DcCfSFPsciUe2pYwB0Bxhr-D5Zm9h8`
     const result = await axios.post(`${process.env.NEXT_PUBLIC_API_LINK}/file/ocr`, formData)
     // const result = await axios.post(`${process.env.NEXT_PUBLIC_API_LINK}/auth/login`, loginPayload)
     console.log(result.data, "X")

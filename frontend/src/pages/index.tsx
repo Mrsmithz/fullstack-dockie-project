@@ -120,14 +120,14 @@ const Home: NextPage = () => {
     console.log(response);
   }
 
-  if(loading){
-    console.log(loading, "vv")
-    return <p>Loading...</p>
-  }
+  // if(loading){
+  //   console.log(loading, "vv")
+  //   return <p>Loading...</p>
+  // }
 
-  if (status === "loading") {
-    return <p>Loading...</p>
-  }
+  // if (status === "loading") {
+  //   return <p>Loading...</p>
+  // }
   return (
     <Box className={styles.container}>
       {

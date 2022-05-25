@@ -38,7 +38,7 @@ type Props = {
 }
 
 const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail}: Props) => {
-
+    console.log(Detail, "cx")
     const [newComment, setNewComment] = useState("");
     const [rating, setRating] = useState(postData.ratings);
     const [newRating, setNewRating] = useState(0);
@@ -153,7 +153,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail}: Pr
                             </Flex>
                             <Center mt={2}>
                                 <Text fontSize={{ base: 20, lg: 20, md: 40, sm: 40 }}>
-                                    {postData.author}
+                                    {`${Detail?.author?.firstName} ${Detail?.author?.lastName}`}
                                 </Text>
                             </Center>
                             <Center>

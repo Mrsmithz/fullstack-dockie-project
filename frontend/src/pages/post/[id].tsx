@@ -165,7 +165,7 @@ const PostDetailPage: NextPage<Props> = ({ id }) => {
             </Head>
             <Stack className={styles.container}>
                 <PostDetail
-                    Detail={data?.postById}
+                    post={data?.postById}
                     postData={postData[1]}
                     addComment={(newComment: string) => addComment(newComment)}
                     ratePost={(newRating: number) => ratePost(newRating)}

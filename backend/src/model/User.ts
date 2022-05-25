@@ -1,8 +1,6 @@
 import { Schema, model } from 'mongoose'
 import { composeMongoose } from 'graphql-compose-mongoose'
-import { schemaComposer } from 'graphql-compose'
-import mongoose from 'mongoose'
-
+import { IUser } from '../types/user/User.type'
 
 const UserSchema = new Schema({
     firstName:{
@@ -20,7 +18,8 @@ const UserSchema = new Schema({
     email:{
         type:String,
         required:true,
-        unique:true
+        unique:true,
+        index:true
     },
     followings:[
         {
@@ -43,7 +42,7 @@ const UserSchema = new Schema({
 }, {timestamps: true})
 
 
-const User = model('User', UserSchema)
+const User = model<IUser>('User', UserSchema)
 const customizationOptions = {}
 const UserTC = composeMongoose(User, customizationOptions)
 

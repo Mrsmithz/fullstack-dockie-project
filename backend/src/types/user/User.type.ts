@@ -1,5 +1,5 @@
 import mongoose, { Document } from 'mongoose'
-interface User extends Document{
+export interface IUser extends Document{
     firstName:string,
     lastName:string,
     image: string,
@@ -11,4 +11,3 @@ interface User extends Document{
     recentView: [mongoose.Types.ObjectId]
 }
 
-export default User

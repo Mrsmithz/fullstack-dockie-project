@@ -1,7 +1,7 @@
 import { UserTC, User} from "../../model/User"
 import { schemaComposer, ResolverResolveParams} from "graphql-compose"
 import { IGraphqlContext } from "../../types/index.type"
-import IUser from '../../types/user/User.type'
+import { IUser } from '../../types/user/User.type'
 
 export const userById = UserTC.mongooseResolvers.findById()
 export const user = UserTC.mongooseResolvers.findOne()

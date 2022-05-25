@@ -22,10 +22,13 @@ import DeleteCommentModal from './DeleteCommentModal'
 import { DeleteIcon } from '@chakra-ui/icons'
 
 import { Comment } from "../../types/Comment"
+import { Post } from "../../types/Post"
 
 import {
     checkComment
-  } from '../../utils/feedbackPost';
+} from '../../utils/feedbackPost';
+
+import Link from "next/link"
 
 const size = { base: "100%", md: "80%", lg: "60%" };
 
@@ -34,11 +37,10 @@ type Props = {
     addComment: Function
     ratePost: Function
     deleteComment: Function,
-    Detail: any
+    post: Post
 }
 
-const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail}: Props) => {
-    console.log(Detail, "cx")
+const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Props) => {
     const [newComment, setNewComment] = useState("");
     const [rating, setRating] = useState(postData.ratings);
     const [newRating, setNewRating] = useState(0);
@@ -86,7 +88,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail}: Pr
         return starList;
     }
 
-    const zeroPad = (num :number, places :number) => String(num).padStart(places, '0')
+    const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
 
     const formatCommentDate = (date: Date) => {
         return date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate() + " " + zeroPad(date.getHours(), 2) + ":" + zeroPad(date.getMinutes(), 2);
@@ -124,15 +126,17 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail}: Pr
         onCloseDeleteModal()
         setUpdateKey(updateKey + 1)
     }
-
+    const backgroundDetailPostColor = useColorModeValue("blue.100", "gray.500")
     const commentBoxColor = useColorModeValue("blue.200", "gray.400");
+    const backgroundTitleAndDesColor = useColorModeValue("gray.100", "gray.600")
+    const backgroundDesColor = useColorModeValue("blue.200", "gray.700")
 
     return (
         <>
             <Stack>
                 <Center
                     w={size}
-                    bg={useColorModeValue("blue.100", "gray.500")}
+                    bg={backgroundDetailPostColor}
                     p={{ base: 5, lg: 10 }}
                     borderRadius={20}
                     alignSelf="center"
@@ -143,22 +147,24 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail}: Pr
                     <Grid templateColumns="repeat(12, 1fr)">
                         <GridItem colSpan={{ base: 12, lg: 3, md: 12, sm: 12 }}>
                             <Flex justify="center" align="center">
-                                <Image
-                                    src={
-                                        postData.imgUrl
-                                    }
-                                    alt="image"
-                                    boxSize={{ base: 200, lg: 200, md: 400, sm: 400 }}
-                                />
+                                <Link href={`/profile/${post?.authorId}`} passHref>
+                                    <Image
+                                        src={
+                                            postData.imgUrl
+                                        }
+                                        alt="image"
+                                        boxSize={{ base: 200, lg: 200, md: 400, sm: 400 }}
+                                    />
+                                </Link>
                             </Flex>
                             <Center mt={2}>
                                 <Text fontSize={{ base: 20, lg: 20, md: 40, sm: 40 }}>
-                                    {`${Detail?.author?.firstName} ${Detail?.author?.lastName}`}
+                                    {post?.author.firstName} {post?.author.lastName}
                                 </Text>
                             </Center>
                             <Center>
                                 <Text fontSize={{ base: 20, lg: 20, md: 40, sm: 40 }}>
-                                    {postData.contact}
+                                    {post?.author.email}
                                 </Text>
                             </Center>
                         </GridItem>
@@ -167,20 +173,22 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail}: Pr
                             <Box
                                 w={"100%"}
                                 p={5}
-                                bg={useColorModeValue("gray.100", "gray.600")}
+                                bg={backgroundTitleAndDesColor}
                                 borderRadius={20}
                             >
-                                <Text fontSize={20}>Title : {Detail?.title}</Text>
+                                <Text fontSize={20}>Title : {post?.title}</Text>
                                 <Text fontSize={20}>Description</Text>
                                 <Box
-                                    bg={useColorModeValue("blue.200", "gray.700")}
+                                    bg={backgroundDesColor}
                                     p={3}
                                     borderRadius={10}
                                     minH="8rem"
                                     mt={2}
                                     mb={5}
+                                    h={200}
+                                    overflowY="auto"
                                 >
-                                    <Text fontSize={15}> {Detail?.document.text} </Text>
+                                    <Text fontSize={15}> {post?.document.text} </Text>
                                 </Box>
                                 <Grid templateColumns="repeat(12, 1fr)">
                                     <GridItem
@@ -197,7 +205,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail}: Pr
                                         ))}
                                     </GridItem>
                                 </Grid>
-                                <Text fontSize={16} marginTop="0.5rem" paddingLeft="0.5rem">Permission : {Detail?.status} </Text>
+                                <Text fontSize={16} marginTop="0.5rem" paddingLeft="0.5rem">Permission : {post?.status} </Text>
                                 <Box marginTop="0.25rem" paddingLeft="0.75rem">
                                     <Text>Average Rating</Text>
                                     <Stack direction="row" pr={10}>
@@ -308,7 +316,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail}: Pr
 
             <RatingModal
                 isOpen={isOpen}
-                onClose={() => onClose}
+                onClose={() => onClose()}
                 newRating={newRating}
                 handleRatingModal={() => handleRatingModal()}
             />

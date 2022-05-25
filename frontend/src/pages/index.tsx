@@ -20,6 +20,7 @@ import { GET_ALL_POSTS } from "../graphql/post"
 
 const newestPostData = [
   {
+    _id: "1akfjaksd",
     title: "Newest Post 1",
     author: "Name Lastname",
     description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley",
@@ -35,6 +36,7 @@ const newestPostData = [
     rating: 4
   },
   {
+    _id: "2sdflosdf",
     title: "Newest Post 2",
     author: "Name Lastname",
     description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley",
@@ -50,6 +52,7 @@ const newestPostData = [
     rating: 3
   },
   {
+    _id: "3kdjfklgdfkg",
     title: "Newest Post 3",
     author: "Name Lastname",
     description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley",
@@ -65,6 +68,7 @@ const newestPostData = [
     rating: 5
   },
   {
+    _id: "4dvdljflkdsjfksl",
     title: "Newest Post 3",
     author: "Name Lastname",
     description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley",

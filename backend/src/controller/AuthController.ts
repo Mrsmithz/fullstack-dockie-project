@@ -6,6 +6,7 @@ import { generateJwtToken } from '../utils/jwtUtils'
 export const login = async (req : Request, res : Response, next : NextFunction) : Promise<Response> => {
     const {firstName, lastName, email, image} : ISignup = req.body
     const user = await User.findOne({email})
+    
     if (user){
         const token = generateJwtToken(user._id)
         await User.updateOne({ email }, {firstName, lastName, image})

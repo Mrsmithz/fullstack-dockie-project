@@ -12,6 +12,8 @@ import {
   Tag,
   SimpleGrid,
   Button,
+  HStack,
+  Avatar
 } from "@chakra-ui/react";
 import Link from "next/link";
 import axios from 'axios'
@@ -20,9 +22,15 @@ import { useRouter } from 'next/router'
 import styles from '../../styles/CreatePost.module.scss'
 
 import { CreatedPost } from '../../types/CreatedPost'
+import { useSession,getSession, signIn, signOut } from "next-auth/react"
 
 type Props = {
   postData: CreatedPost,
+  document: {
+    fileId: string,
+    text: string,
+    title: string[]
+  },
   backPage: Function,
   file: File
 };
@@ -31,17 +39,26 @@ const size = { base: "100%", md: "80%", lg: "60%" };
 
 const API_LINK = process.env.NEXT_PUBLIC_API_LINK
 
-const PreviewPost = ({ postData, backPage, file }: Props) => {
+const PreviewPost = ({ postData, document, backPage, file }: Props) => {
+  const { data: token, status } = useSession()
+
   const createPost = async () => {
+    console.log(postData);
     const formData = new FormData()
-    formData.append("file", file)
     for (let i = 0; i < postData.image.length; i++) {
       formData.append("images", postData.image[i])
     }
-    formData.append("title", postData.title)
+    if(postData.titleType === "2"){
+      formData.append("title", postData.title)
+    }else if(postData.titleType === "1"){
+      formData.append("title", postData.titleOcr)
+    }
     formData.append("status", postData.permission)
-    const res = await axios.post(`${API_LINK}/posts/create`, formData)
-    console.log(res.data)
+    formData.append("description", postData.description)
+    formData.append("document", JSON.stringify(document))
+    axios.defaults.headers.common["Authorization"] = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOGI4YjE0MWZhMTYxNzE2N2QzODk5OSIsImlhdCI6MTY1MzQ2ODY2MywiZXhwIjoxNjU0MDczNDYzfQ.cJ7cy7IsPvmCZwuQ7PxSddBLYfJ2Pm5NW2ruV3aIDLA`
+    const res = await axios.post(`${API_LINK}/post/create`, formData)
+    console.log(res.data, "bn")
     router.push('/')
   }
 
@@ -62,17 +79,16 @@ const PreviewPost = ({ postData, backPage, file }: Props) => {
           <Grid templateColumns="repeat(12, 1fr)">
             <GridItem colSpan={{ base: 12, lg: 3, md: 12, sm: 12 }}>
               <Flex justify="center" align="center">
-                <Image
+                <Avatar
                   src={
-                    "http://www.168virtualschool.com/images/No_image_available.png"
+                    token?.user?.image ? token.user.image : "http://www.168virtualschool.com/images/No_image_available.png"
                   }
-                  alt="image"
-                  boxSize={{ base: 200, lg: 200, md: 400, sm: 400 }}
+                  boxSize={{ base: 150, lg: 150, md: 200, sm: 200 }}
                 />
               </Flex>
               <Center mt={2}>
                 <Text fontSize={{ base: 20, lg: 20, md: 40, sm: 40 }}>
-                  Name
+                  {token?.user?.name}
                 </Text>
               </Center>
               <Center>
@@ -91,8 +107,12 @@ const PreviewPost = ({ postData, backPage, file }: Props) => {
                 p={5}
                 bg={useColorModeValue("gray.100", "gray.600")}
                 borderRadius={20}
-              >
-                <Text fontSize={20}>Title : <div id="title">{postData.title}</div> </Text>
+              > 
+                <HStack>
+                <Text fontSize={20}>Title :  </Text>
+                <div id="title">{postData.titleType === "1" ? postData.titleOcr : postData.title}</div>
+                </HStack>
+
                 <Text fontSize={20}>Description</Text>
                 <Box
                   bg={useColorModeValue("blue.200", "gray.700")}

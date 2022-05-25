@@ -118,13 +118,21 @@ const GET_POST_BY_ID = gql`
         postById(_id : $id) {
             title,
             document,
-            status
-            authorId
-            author{
+            status,
+            author {
                 firstName
-                lastName
-                email
-              }
+                lastName,
+                email,
+                image
+            },
+            tags{
+                name
+            },
+            ratings{
+                rating
+            },
+            images,
+            comments
         }
     }
 `

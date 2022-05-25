@@ -41,7 +41,6 @@ type Props = {
 }
 
 const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Props) => {
-
     const [newComment, setNewComment] = useState("");
     const [rating, setRating] = useState(postData.ratings);
     const [newRating, setNewRating] = useState(0);

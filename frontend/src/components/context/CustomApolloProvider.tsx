@@ -10,9 +10,7 @@ import {useMemo} from "react"
 import type { AppProps } from "next/app";
 // The name here doesn't really matters.
 export default function CustomApolloProvider(props:any) {
-    console.log(props, "ddx")
     const { data: token, status } = useSession()
-    console.log(token, "D")
     const client = useMemo(() => {
         const authLink = setContext((_, { headers }) => ({
             headers: {
@@ -30,6 +28,7 @@ export default function CustomApolloProvider(props:any) {
             cache: new InMemoryCache(),
         });
     }, [token]);
+
 
     return <ApolloProvider client={client} {...props} />;
 }

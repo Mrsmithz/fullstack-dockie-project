@@ -127,6 +127,7 @@ const Home: NextPage = () => {
   if (status === "loading") {
     return <p>Loading...</p>
   }
+
   return (
     <Box className={styles.container}>
       {

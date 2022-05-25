@@ -56,8 +56,9 @@ const PreviewPost = ({ postData, document, backPage, file }: Props) => {
     formData.append("status", postData.permission)
     formData.append("description", postData.description)
     formData.append("document", JSON.stringify(document))
+    axios.defaults.headers.common["Authorization"] = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOGI4YjE0MWZhMTYxNzE2N2QzODk5OSIsImlhdCI6MTY1MzQ2ODY2MywiZXhwIjoxNjU0MDczNDYzfQ.cJ7cy7IsPvmCZwuQ7PxSddBLYfJ2Pm5NW2ruV3aIDLA`
     const res = await axios.post(`${API_LINK}/post/create`, formData)
-    console.log(res.data)
+    console.log(res.data, "bn")
     router.push('/')
   }
 

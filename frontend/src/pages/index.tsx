@@ -121,7 +121,6 @@ const Home: NextPage = () => {
   }
 
   if(loading){
-    console.log(loading, "vv")
     return <p>Loading...</p>
   }
 
@@ -178,7 +177,7 @@ const Home: NextPage = () => {
               <Text as='h2' fontSize={'2xl'} isTruncated>Online Structural Validate-based System © v1.0 beta</Text>
             </Center> */}
             <Center marginTop={8}>
-              <Button colorScheme='green' variant='outline' size={'lg'} onClick={() => signIn()}>
+              <Button colorScheme='green' variant='outline' size={'lg'} onClick={() => signIn('google')}>
                 Login with google
               </Button>
               {/* <GoogleLogin

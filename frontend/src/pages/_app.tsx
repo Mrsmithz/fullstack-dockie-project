@@ -4,19 +4,17 @@ import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
 import { extendTheme } from "@chakra-ui/react";
 import "@fontsource/prompt/400.css"
-import client from '../utils/apollo-client'
-import { ApolloProvider } from '@apollo/client'
 import { SessionProvider } from "next-auth/react"
 import CustomApolloProvider from "../components/context/CustomApolloProvider"
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps}: AppProps) {
   const theme = extendTheme({
     fonts: {
       body: "Prompt",
     },
   });
   return (
-    <SessionProvider>
+    <SessionProvider refetchOnWindowFocus={false} refetchInterval={60 * 60}>
       <CustomApolloProvider>
         <ChakraProvider theme={theme}>
           <Navbar />

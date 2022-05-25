@@ -22,6 +22,7 @@ import DeleteCommentModal from './DeleteCommentModal'
 import { DeleteIcon } from '@chakra-ui/icons'
 
 import { Comment } from "../../types/Comment"
+import { Post } from "../../types/Post"
 
 import {
     checkComment
@@ -36,10 +37,10 @@ type Props = {
     addComment: Function
     ratePost: Function
     deleteComment: Function,
-    Detail: any
+    post: Post
 }
 
-const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail }: Props) => {
+const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Props) => {
 
     const [newComment, setNewComment] = useState("");
     const [rating, setRating] = useState(postData.ratings);
@@ -147,7 +148,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail }: P
                     <Grid templateColumns="repeat(12, 1fr)">
                         <GridItem colSpan={{ base: 12, lg: 3, md: 12, sm: 12 }}>
                             <Flex justify="center" align="center">
-                                <Link href={`/profile/${Detail?.authorId}`} passHref>
+                                <Link href={`/profile/${post?.authorId}`} passHref>
                                     <Image
                                         src={
                                             postData.imgUrl
@@ -159,12 +160,12 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail }: P
                             </Flex>
                             <Center mt={2}>
                                 <Text fontSize={{ base: 20, lg: 20, md: 40, sm: 40 }}>
-                                    {postData.author}
+                                    {post?.author.firstName} {post?.author.lastName}
                                 </Text>
                             </Center>
                             <Center>
                                 <Text fontSize={{ base: 20, lg: 20, md: 40, sm: 40 }}>
-                                    {postData.contact}
+                                    {post?.author.email}
                                 </Text>
                             </Center>
                         </GridItem>
@@ -176,7 +177,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail }: P
                                 bg={backgroundTitleAndDesColor}
                                 borderRadius={20}
                             >
-                                <Text fontSize={20}>Title : {Detail?.title}</Text>
+                                <Text fontSize={20}>Title : {post?.title}</Text>
                                 <Text fontSize={20}>Description</Text>
                                 <Box
                                     bg={backgroundDesColor}
@@ -185,8 +186,10 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail }: P
                                     minH="8rem"
                                     mt={2}
                                     mb={5}
+                                    h={200}
+                                    overflowY="auto"
                                 >
-                                    <Text fontSize={15}> {Detail?.document.text} </Text>
+                                    <Text fontSize={15}> {post?.document.text} </Text>
                                 </Box>
                                 <Grid templateColumns="repeat(12, 1fr)">
                                     <GridItem
@@ -203,7 +206,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, Detail }: P
                                         ))}
                                     </GridItem>
                                 </Grid>
-                                <Text fontSize={16} marginTop="0.5rem" paddingLeft="0.5rem">Permission : {Detail?.status} </Text>
+                                <Text fontSize={16} marginTop="0.5rem" paddingLeft="0.5rem">Permission : {post?.status} </Text>
                                 <Box marginTop="0.25rem" paddingLeft="0.75rem">
                                     <Text>Average Rating</Text>
                                     <Stack direction="row" pr={10}>

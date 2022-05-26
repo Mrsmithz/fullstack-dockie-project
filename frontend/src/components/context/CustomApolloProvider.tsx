@@ -29,6 +29,5 @@ export default function CustomApolloProvider(props:any) {
         });
     }, [token]);
 
-
     return <ApolloProvider client={client} {...props} />;
 }

@@ -132,7 +132,9 @@ const GET_POST_BY_ID = gql`
                 rating
             },
             images,
-            comments
+            comments{
+                comment
+            }
         }
     }
 `
@@ -157,6 +159,7 @@ const PostDetailPage: NextPage<Props> = ({ id }) => {
     const { loading, error, data} = useQuery(GET_POST_BY_ID, {
         variables: { id }
     })
+    console.log(data)
     return (
         <div>
             <Head>

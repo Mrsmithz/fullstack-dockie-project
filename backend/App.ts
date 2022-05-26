@@ -43,6 +43,11 @@ app.get(`${ContextPath}/health`, (req : Request, res : Response, next : NextFunc
         status:'UP'
     })
 })
+app.get(`/`, (req : Request, res : Response, next : NextFunction) : Response => {
+    return res.status(200).send({
+        status:'UP'
+    })
+})
 
 app.get(`${ContextPath}/me`, isAuthenticated, (req, res, next) => {
     res.send(req.user)

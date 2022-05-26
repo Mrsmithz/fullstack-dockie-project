@@ -1,39 +1,79 @@
 import { Center, Flex, Grid, GridItem, Text, useColorModeValue, Image, Button, Box, useToast } from "@chakra-ui/react";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link"
 import { Profile } from "../../types/Profile";
 import { Post } from "../../types/Post";
+import { useMutation, gql } from '@apollo/client'
+import axios from "axios"
 const size = { base: "100%", md: "80%", lg: "60%" };
 
 
 type Props = {
     profile: Profile,
+    refetch: Function
 }
 
-const ProfileDetail = ({ profile }: Props) => {
+const FOLLOW_USER_MUTATION = gql`
+mutation($followingId: MongoID!){
+    follow(followingId: $followingId){
+      followingId
+    }
+  }
+`
+const UNFOLLOW_USER_MUTATION = gql`
+mutation($followingId: MongoID!){
+    unfollow(followingId: $followingId){
+      createdAt
+    }
+}
+`
+
+const ProfileDetail = ({ profile, refetch }: Props) => {
     const toast = useToast()
     const backgroundProfileDetailColor = useColorModeValue("blue.100", "gray.500")
     const backgroundCollectoins = useColorModeValue("blue.300", "gray.700")
+    const [followMutation] = useMutation(FOLLOW_USER_MUTATION)
+    const [unfollowMutation] = useMutation(UNFOLLOW_USER_MUTATION)
     const [followButton, setFollowButton] = useState(true)
-    const followUser = useCallback(async (profile) => {
+    const [myProfile, setMyProfile] = useState(false)
+    const followUser = useCallback(async () => {
         setFollowButton(false)
+        await followMutation({variables: {followingId: profile._id}})
         toast({
-            title: `Follow ${profile.firstName}`,
+            title: `Follow ${profile?.firstName}`,
             status: 'success',
             duration: 4000,
             isClosable: true,
         })
+        refetch()
     }, [])
-    const unFollowUser = useCallback(() => {
+    const unFollowUser = useCallback(async () => {
         setFollowButton(true)
+        await unfollowMutation({variables: {followingId: profile._id}})
         toast({
-            title: `Un follow ${profile.firstName}`,
+            title: `Unfollow ${profile?.firstName}`,
             status: 'error',
             duration: 4000,
             isClosable: true,
         })
+        refetch()
     }, [])
-    console.log(profile?.posts)
+
+    const checkProfile = useCallback(async () => {
+        const userId = await axios.get("http://localhost:8001/api/v1/me")
+        if (profile._id == userId.data._id) {
+            setMyProfile(true)
+        }
+        const checkFollowing = profile.followers.some(
+            (follower) => follower.followerId == userId.data._id
+        );
+        if(checkFollowing){
+            setFollowButton(false)
+        }
+    }, [])
+    useEffect(() => {
+        checkProfile()
+    }, [checkProfile])
     return (
         <>
             <Center
@@ -58,16 +98,16 @@ const ProfileDetail = ({ profile }: Props) => {
                     </GridItem>
                     <GridItem colSpan={{ base: 12, lg: 7 }} mt={{ base: 1, lg: 8 }}>
                         <Center >
-                            <Text fontSize={{ base: 30, lg: 40 }} >{profile?.firstName} {profile?.lastName}</Text>
+                            <Text fontSize={{ base: 30, lg: 40 }} > {profile?.firstName} {profile?.lastName}</Text>
                         </Center>
                         <Center>
-                            <Text fontSize={20}> {profile?.posts.length} Post {profile?.followings.length} Followings {profile?.followers.length} Follower</Text>
+                            <Text fontSize={20}> {profile?.posts.length} Post {profile?.followings.length} Following {profile?.followers.length} Follower</Text>
                         </Center>
                         <Center mt={5}>
-                            {followButton && (
-                                <Button colorScheme="blue" variant="solid" onClick={() => followUser(profile)}>+ Follow</Button>
+                            {followButton && myProfile == false && (
+                                <Button colorScheme="blue" variant="solid" onClick={() => followUser()}>+ Follow</Button>
                             )}
-                            {!followButton && (
+                            {!followButton && myProfile == false &&(
                                 <Button colorScheme="red" variant="solid" onClick={() => unFollowUser()}>Un follow</Button>
                             )}
                         </Center>

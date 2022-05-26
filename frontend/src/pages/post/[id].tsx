@@ -135,6 +135,7 @@ const GET_POST_BY_ID = gql`
             comments{
                 comment
             }
+            authorId
         }
     }
 `

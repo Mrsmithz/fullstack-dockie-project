@@ -33,6 +33,7 @@ const ProfileDetail = ({ profile }: Props) => {
             isClosable: true,
         })
     }, [])
+    console.log(profile?.posts)
     return (
         <>
             <Center
@@ -50,16 +51,17 @@ const ProfileDetail = ({ profile }: Props) => {
                                 src={profile?.image}
                                 alt="image"
                                 boxSize={{ base: 150, lg: 200, md: 400, sm: 400 }}
+                                borderRadius={100}
                             />
                         </Center>
 
                     </GridItem>
                     <GridItem colSpan={{ base: 12, lg: 7 }} mt={{ base: 1, lg: 8 }}>
                         <Center >
-                            <Text fontSize={{ base: 30, lg: 50 }} >{profile?.firstName} {profile?.lastName}</Text>
+                            <Text fontSize={{ base: 30, lg: 40 }} >{profile?.firstName} {profile?.lastName}</Text>
                         </Center>
                         <Center>
-                            <Text fontSize={20}>{profile?.posts.length} Post {profile?.followings.length} Followings</Text>
+                            <Text fontSize={20}> {profile?.posts.length} Post {profile?.followings.length} Followings {profile?.followers.length} Follower</Text>
                         </Center>
                         <Center mt={5}>
                             {followButton && (
@@ -80,13 +82,16 @@ const ProfileDetail = ({ profile }: Props) => {
                 alignSelf="center"
             >
                 <Text fontSize={{ base: 25, lg: 30 }}>Collections</Text>
-                <Grid templateColumns="repeat(12, 1fr)" gap={{ base: 3, lg: 10 }} mt={5}>
-                    {profile?.posts.map((post: string) => (
-                        <GridItem colSpan={{ base: 6, lg: 3 }} key={post}>
-                            <Link href={"/post/" + post} passHref>
-                                <Button bg={backgroundCollectoins} w={"100%"} h={{ base: 200, lg: 300 }} borderRadius={20}>
+                <Grid templateColumns="repeat(12, 1fr)" gap={{ base: 3, lg: 5 }} mt={5}>
+                    {profile?.posts.map((post: Post) => (
+                        <GridItem colSpan={{ base: 6, lg: 3 }} key={post._id}>
+                            <Link href={"/post/" + post._id} passHref>
+                                <Button bg={backgroundCollectoins} w={"100%"} h={{ base: 200, lg: 200 }} borderRadius={20} style={{
+                                    whiteSpace: "normal",
+                                    wordWrap: "-moz-initial",
+                                }}>
                                     <Center>
-                                        <Text fontSize={25}>{post}</Text>
+                                        <Text fontSize={15}>{post.title}</Text>
                                     </Center>
                                 </Button>
                             </Link>

@@ -14,9 +14,18 @@ query ($id: MongoID!){
     userById(_id: $id){
       firstName
       lastName
-      followings
-      posts
+      followings{
+        _id
+      }
+      followers{
+          _id
+      }
+      posts{
+        _id
+        title
+      }
       image
+      email
     }
   }
 `
@@ -24,6 +33,7 @@ const ProfilePage: NextPage<Props> = ({ id }) => {
     const {loading, error, data, refetch} = useQuery(GET_PROFILE_BY_ID, {
         variables: { id }
     })
+    console.log(data)
     return (
         <div>
             <Head>

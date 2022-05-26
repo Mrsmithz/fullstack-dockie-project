@@ -2,9 +2,13 @@ import { Post } from "./Post"
 export type Profile = {
     firstName: string,
     lastName: string,
-    followings: string[],
-    posts: string[],
+    followings: {
+        _id: string
+    }[],
+    followers: {
+        _id: string
+    }[],
+    posts: Post[],
     image: string,
-    postsDetail: Post[],
     email: string
 }

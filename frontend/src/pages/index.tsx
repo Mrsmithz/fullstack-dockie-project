@@ -114,6 +114,7 @@ const Home: NextPage = () => {
   const { loading, error, data } = useQuery(GET_ALL_POSTS)
 
   const { data: token, status } = useSession()
+  // console.log(token, "c")
   // const [ session, loadingsss ] = useSession()
   // console.log(data, token, "x")
   // console.log(session, "dd")

@@ -20,7 +20,6 @@ export default NextAuth({
         image: token.picture,
       };
       const result = await axios.post(`${process.env.NEXT_PUBLIC_API_LINK}/auth/login`, loginPayload)
-      axios.defaults.headers.common["Authorization"] = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyODkyNTg2MjY2OWU1ZjE1Mjc0ZjIyMyIsImlhdCI6MTY1MzE1NTIwNiwiZXhwIjoxNjUzNzYwMDA2fQ.DsrAnvsVTbgXUbVbpMRkX0gsqiD4-TlBuerVpNu4yBw`
       if (account) {
         token.accessToken = result.data.accessToken;
       }

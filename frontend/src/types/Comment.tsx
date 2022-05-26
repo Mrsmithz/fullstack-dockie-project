@@ -1,5 +1,5 @@
 export type Comment = {
-    author: string;
-    createdDate: Date;
+    authorId: string;
+    createdAt: Date;
     comment: string;
 }

@@ -11,7 +11,7 @@ import mongoose, {ClientSession} from 'mongoose'
 
 const createPost = async (req : Request, res : Response, next : NextFunction) : Promise<Response> => {
     const uploads = req.files as UploadFiles
-    const {title, description, contact, status, document} = req.body as ICreatePost
+    const {title, description, contact, status, document, tagId} = req.body as ICreatePost
     const imageResult = await imageUpload(uploads.images)
 
     if (imageResult instanceof Error){
@@ -26,6 +26,7 @@ const createPost = async (req : Request, res : Response, next : NextFunction) : 
             description,
             contact,
             status,
+            tagId,
             authorId:req.user._id,
             file: documentJSON.fileId,
             images: imageResult,
@@ -60,6 +61,7 @@ const createPost = async (req : Request, res : Response, next : NextFunction) : 
         description,
         contact,
         status,
+        tagId,
         file: document.fileId,
         images: imageResult,
         document:{

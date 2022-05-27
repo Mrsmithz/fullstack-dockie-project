@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "NODE_TLS_REJECT_UNAUTHORIZED=0 next build",
-    "start": "next start",
+    "start": "NODE_TLS_REJECT_UNAUTHORIZED=0 next start",
     "lint": "next lint",
     "generate": "graphql-codegen --config codegen.yml",
     "unit-test": "jest -i ./src/test/utils/formValidation.test.ts ./src/test/utils/feedbackPost.test.ts",

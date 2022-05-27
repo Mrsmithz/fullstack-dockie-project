@@ -1,4 +1,4 @@
-import {Tag} from "./Tag"
+import { Tag } from "./Tag"
 
 export type CreatedPost = {
   title: string;
@@ -7,6 +7,6 @@ export type CreatedPost = {
   tag: Tag[];
   permission: string;
   image: File[]
-  titleOcr:string
-  titleType:string
+  titleOcr: string
+  titleType: string
 }

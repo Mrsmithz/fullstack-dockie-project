@@ -9,12 +9,15 @@ import {
 } from '../../utils/formValidation';
 
 type Props = {
+  toNextPage: Function,
+  file: File | null,
+  setFile: Function
 };
 
 const size = { base: '80%', md: '70%', lg: '60%' }
 // const containerWidth = { base: '100%', sm: '90%', md: '90%', lg: '85%', xl: '70%' };
 
-const UploadFile: NextPage<{ toNextPage: Function, file: File | null, setFile: Function }> = ({ toNextPage, file, setFile }) => {
+const UploadFile = ({ toNextPage, file, setFile }:Props) => {
 
   const toast = useToast()
 

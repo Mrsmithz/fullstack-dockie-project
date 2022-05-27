@@ -60,7 +60,7 @@ const NewestPostList = ({ posts }: Props) => {
             <GridItem colSpan={5}>
               <Flex justify="center" align="center" height="100%">
                 <Stack w="100%">
-                  {item.tags && (
+                  {/* {item.tags && (
                     <Flex flexWrap="wrap">
                       {item.tags.map((item: string, index: number) => (
                         <Flex justify="center" align="center" key={`newest-tag-${index}`}
@@ -75,7 +75,7 @@ const NewestPostList = ({ posts }: Props) => {
                     <Flex flexWrap="wrap">
                       <Text>No Tags</Text>
                     </Flex>
-                  )}
+                  )} */}
 
 
                   {/* <Stack direction="row" pl={1} mt={0}>

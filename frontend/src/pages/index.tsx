@@ -42,19 +42,12 @@ const historyPostData = [
 ]
 
 const Home: NextPage = () => {
-  // console.log(posts, "xxx")
   const [filter, setFilter] = useState<any[]>([])
   const { loading, error, data } = useQuery(GET_ALL_POSTS)
   const { loading: loadingFilter, error: errorFilter, data: dataFilter} = useQuery(GET_ALL_POST_FOR_FILTER)
   const { loading: loadingMe, error: errorMe, data: dataMe} = useQuery(ME)
   const { data: token, status } = useSession()
-  console.log(token, "c")
-  // const [ session, loadingsss ] = useSession()
-  // console.log(data, token, "x")
-  // console.log(session, "dd")
-  // useEffect(() => {
-  //   console.log(data, "d")
-  // }, [token])
+  
   const responseGoogle = (response: any) => {
     console.log(response);
   }

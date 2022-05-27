@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StarIcon } from '@chakra-ui/icons'
 import {
     Box,
@@ -52,7 +52,6 @@ type Props = {
 }
 
 const PostDetail = ({ postData, addComment, ratePost, deleteComment, post, myRating, owner, myId }: Props) => {
-    console.log(post)
     const { data: token, status } = useSession()
 
     const router = useRouter()
@@ -109,6 +108,9 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post, myRat
         return starList;
     }
 
+    useEffect(()=>{
+        setRating(myRating)
+    }, [myRating])
     const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
 
     // const formatCommentDate = (date: Date) => {

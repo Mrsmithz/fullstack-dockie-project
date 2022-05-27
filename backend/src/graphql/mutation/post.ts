@@ -6,6 +6,9 @@ import { schemaComposer, ResolverResolveParams} from 'graphql-compose'
 import { IAddRatingArgs, IUpdatePostArgs, IRemovePostArgs} from "../../types/graphql/post.type"
 import { IGraphqlContext } from "../../types/index.type"
 import { IRating, IPost} from "../../types/post/Post.type"
+import { Comment } from "../../model/Comment"
+import { Download } from "../../model/Download"
+import { View } from "../../model/View"
 export const updatePostById = schemaComposer.createResolver({
     name:'updatePostById',
     kind:'mutation',
@@ -47,6 +50,9 @@ export const removePostById = schemaComposer.createResolver({
             if (!removedPost){
                 throw new Error('Post not found')
             }
+            await Comment.deleteMany({postId : _id}, { session })
+            await Download.deleteMany({postId : _id}, { session })
+            await View.deleteMany({postId: _id})
             await User.updateOne({_id:user._id}, {
                 $pull: {
                     posts : _id

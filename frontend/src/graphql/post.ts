@@ -8,6 +8,7 @@ export const GET_ALL_POSTS = gql`
       document
       status
       ratingAvg
+      images
     }
   }
 `;
@@ -27,6 +28,7 @@ export const GET_ALL_POST_FOR_FILTER_AUTHOR = gql`
       tags {
         name
       }
+      images
     }
   }
 `
@@ -48,4 +50,20 @@ export const GET_ALL_POST_WITH_AUTHOR = gql`
       images
     }
   }
+`
+
+export const GET_NEWEST_POST = gql`
+query {
+  newestPosts {
+    _id
+    title
+    author {
+      firstName
+      lastName
+    }
+    ratingAvg
+    createdAt
+    images
+  }
+}
 `

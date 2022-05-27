@@ -17,21 +17,25 @@ import {
   Stack,
   Center,
   useColorMode,
-  Portal,
   Text,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
-import { MoonIcon, SunIcon, BellIcon } from "@chakra-ui/icons";
+import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react"
 import { useRouter } from 'next/router';
+import { gql, useQuery } from '@apollo/client'
+
+const ME_QUERY = gql`
+query{
+    me{
+      _id
+      firstName
+      lastName
+      image
+    }
+  }
+`
 
 const NavLink = ({ children, page }: { children: ReactNode; page: string }) => (
   <NextLink href={page} passHref>
@@ -54,17 +58,14 @@ export default function Simple() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter()
   const { data: token, status } = useSession()
-
-  const {
-    isOpen: openModal,
-    onOpen: onOpenModal,
-    onClose: onCloseModal,
-  } = useDisclosure();
+  const { loading, error, data } = useQuery(ME_QUERY)
 
   const backgroundNav = useColorModeValue("gray.100", "gray.900");
   const iconSwithTheme = useColorModeValue("yellow.300", "orange.500");
-  const notiHover = useColorModeValue("blue.100", "blue.500");
 
+  const goProfilePage = (id: string) => {
+    router.push("/profile/" + id)
+  }
   const handleSignout = async () => {
     await signOut({ callbackUrl: "/" })
   }
@@ -121,7 +122,6 @@ export default function Simple() {
               <Stack as={"nav"} spacing={4} alignItems="center">
                 <NavLink page={"/"}>Home</NavLink>
                 <NavLink page={"/forum"}>Forum</NavLink>
-                <NavLink page={"/ranking"}>Ranking</NavLink>
                 <Box onClick={toggleColorMode}>
                   {colorMode === "light" ? (
                     <Text>Dark Mode</Text>
@@ -129,32 +129,9 @@ export default function Simple() {
                     <Text>Light Mode</Text>
                   )}
                 </Box>
-                <Box onClick={onOpenModal}>Notification</Box>
               </Stack>
             </Box>
           ) : null}
-
-          {/* Modal Noti */}
-          <Modal isOpen={openModal} onClose={onCloseModal} isCentered>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>Modal Title</ModalHeader>
-              <ModalCloseButton onClick={onCloseModal} />
-              <ModalBody>
-                <Box>Noti 1</Box>
-                <Box>Noti 2</Box>
-                <Box>Noti 3</Box>
-                <Box>Noti 4</Box>
-                <Box>Noti 5</Box>
-              </ModalBody>
-
-              <ModalFooter>
-                <Button colorScheme="blue" mr={3} onClick={onCloseModal}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
         </Box>
       </>
     )
@@ -187,7 +164,6 @@ export default function Simple() {
             >
               <NavLink page={"/"}>Home</NavLink>
               <NavLink page={"/forum"}>Forum</NavLink>
-              <NavLink page={"/ranking"}>Ranking</NavLink>
             </HStack>
           </HStack>
           <Flex alignItems={"center"}>
@@ -210,24 +186,6 @@ export default function Simple() {
                   )}
                 </MenuButton>
               </Menu>
-              <Menu>
-                <MenuButton
-                  _hover={{ bg: notiHover }}
-                  w={10}
-                  borderRadius={100}
-                >
-                  <BellIcon w={5} h={10} />
-                </MenuButton>
-                <Portal>
-                  <MenuList>
-                    <MenuItem>Noti 1</MenuItem>
-                    <MenuItem>Noti 2</MenuItem>
-                    <MenuItem>Noti 3</MenuItem>
-                    <MenuItem>Noti 4</MenuItem>
-                    <MenuItem>Noti 5</MenuItem>
-                  </MenuList>
-                </Portal>
-              </Menu>
             </Stack>
             <Box ml={5}>
               <Menu>
@@ -240,7 +198,7 @@ export default function Simple() {
                 >
                   <Avatar
                     size={"sm"}
-                    src={token?.user?.image ? token.user.image : "https://avatars.dicebear.com/api/male/username.svg"}
+                    src={data?.me.image}
                   />
                 </MenuButton>
                 <MenuList alignItems={"center"}>
@@ -248,17 +206,16 @@ export default function Simple() {
                   <Center>
                     <Avatar
                       size={"2xl"}
-                      src={token?.user?.image ? token.user.image : "https://avatars.dicebear.com/api/male/username.svg"}
+                      src={data?.me.image}
                     />
                   </Center>
                   <br />
                   <Center>
-                    <p>Username</p>
+                    <p>{data?.me.firstName} {data?.me.lastName}</p>
                   </Center>
                   <br />
                   <MenuDivider />
-                  <MenuItem>Your Servers</MenuItem>
-                  <MenuItem>Account Settings</MenuItem>
+                  <MenuItem onClick={() => goProfilePage(data?.me._id)}>Profile</MenuItem>
                   <MenuItem onClick={() => handleSignout()} >Logout</MenuItem>
                 </MenuList>
               </Menu>
@@ -272,7 +229,6 @@ export default function Simple() {
             <Stack as={"nav"} spacing={4} alignItems="center">
               <NavLink page={"/"}>Home</NavLink>
               <NavLink page={"/forum"}>Forum</NavLink>
-              <NavLink page={"/ranking"}>Ranking</NavLink>
               <Box onClick={toggleColorMode}>
                 {colorMode === "light" ? (
                   <Text>Dark Mode</Text>
@@ -280,32 +236,9 @@ export default function Simple() {
                   <Text>Light Mode</Text>
                 )}
               </Box>
-              <Box onClick={onOpenModal}>Notification</Box>
             </Stack>
           </Box>
         ) : null}
-
-        {/* Modal Noti */}
-        <Modal isOpen={openModal} onClose={onCloseModal} isCentered>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Modal Title</ModalHeader>
-            <ModalCloseButton onClick={onCloseModal} />
-            <ModalBody>
-              <Box>Noti 1</Box>
-              <Box>Noti 2</Box>
-              <Box>Noti 3</Box>
-              <Box>Noti 4</Box>
-              <Box>Noti 5</Box>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={onCloseModal}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
       </Box>
     </>
   );

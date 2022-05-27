@@ -66,12 +66,14 @@ const NewestPostList = ({ posts }: Props) => {
 }
   return (
     <>
+      <Flex direction={'column'} justifyContent={'space-evenly'}>
       {allPost?.map((item, index) => (
         <Button
           onClick={() => goNext(item._id)}
           key={item._id}
           width={"100%"}
-          height={"25%"}
+          height={"100%"}
+          padding={10}
           marginY={3}
         >
           <Grid templateColumns="repeat(12, 1fr)">
@@ -115,6 +117,7 @@ const NewestPostList = ({ posts }: Props) => {
           </Grid>
         </Button>
       ))}
+      </Flex>
     </>
   );
 };

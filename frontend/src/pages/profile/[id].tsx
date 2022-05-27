@@ -7,7 +7,8 @@ import { gql, useQuery } from "@apollo/client";
 import { getSession } from "next-auth/react"
 
 interface Props {
-    id: string
+    id: string,
+    session:any
 }
 
 const GET_PROFILE_BY_ID = gql`

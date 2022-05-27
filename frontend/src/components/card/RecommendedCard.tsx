@@ -49,7 +49,7 @@ const RecommendedCard = ({ item }:Props) => {
         router.push(`/post/${item?._id}`)
     }
     return (
-        <Box
+        <Button
             height={220}
             width={380}
             // minWidth={400}
@@ -101,7 +101,7 @@ const RecommendedCard = ({ item }:Props) => {
                     {renderRating(item.rating)}
                 </Box> */}
             </Box>
-        </Box>
+        </Button>
     )
 }
 

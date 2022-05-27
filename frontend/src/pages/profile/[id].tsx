@@ -44,7 +44,7 @@ const ProfilePage: NextPage<Props> = ({ id }) => {
     const {loading, error, data, refetch} = useQuery(GET_PROFILE_BY_ID, {
         variables: { id }
     })
-    if(loading){
+    if(loading || !data){
         return(
             <div>
                 <h1>Loading</h1>

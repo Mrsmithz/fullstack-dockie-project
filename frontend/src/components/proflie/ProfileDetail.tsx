@@ -100,7 +100,7 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
     useEffect(() => {
         refetch()
         checkProfile()
-    }, [checkProfile, refetch])
+    }, [])
 
     if (!data){
         return <h1>loading...</h1>

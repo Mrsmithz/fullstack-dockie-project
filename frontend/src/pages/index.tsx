@@ -25,15 +25,12 @@ const Home: NextPage = () => {
   const { loading: loadingMe, error: errorMe, data: dataMe, refetch} = useQuery(ME)
   const { data: token, status } = useSession()
 
-  const responseGoogle = (response: any) => {
-    console.log(response);
-  }
   useEffect(() => {
     console.log("Refetch")
     refetch()
     refetchNewest()
   }, [])
-  if(loading || loadingNewest){
+  if(loading || loadingNewest || loadingMe){
     return <p>Loading...</p>
   }
 
@@ -68,7 +65,7 @@ const Home: NextPage = () => {
                   {!!dataNewest && (
                     <NewestPostList posts={dataNewest.newestPosts} />
                   )}
-                  
+
 
                 </GridItem>
 

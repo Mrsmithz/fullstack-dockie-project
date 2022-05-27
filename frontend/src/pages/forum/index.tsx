@@ -19,7 +19,7 @@ import { useRouter } from "next/router";
 import { VIEW_POST } from "../../graphql/me";
 import { StarIcon } from "@chakra-ui/icons";
 const Forum: NextPage = () => {
-    const router = useRouter()
+  const router = useRouter()
   const { loading, error, data } = useQuery(GET_ALL_POST_WITH_AUTHOR);
   const [view, {data: dataView, loading: loadingView, error: errorView}] = useMutation(VIEW_POST)
   const [current, setCurrent] = useState<number>(1);
@@ -78,10 +78,10 @@ const renderRating = (rating: number) => {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />ß
       </Head>
       <Box className={styles.container}>
-      <HStack display={"flex"} justifyContent={"center"} marginBottom={10}>
-            <Button onClick={() => prev()}>Prev</Button>
-            <Text color={"white"}>{current}</Text>
-            <Button onClick={() => next()}>Next</Button>
+        <HStack display={"flex"} justifyContent={"center"} marginBottom={10}>
+              <Button onClick={() => prev()}>Prev</Button>
+              <Text color={"white"}>{current}</Text>
+              <Button onClick={() => next()}>Next</Button>
         </HStack>
         <Box display={"flex"} justifyContent={"center"} height={600}>
           <Grid templateColumns="repeat(4, 1fr)" gap={19}>
@@ -102,12 +102,12 @@ const renderRating = (rating: number) => {
                           <HStack marginY={2}>
                             {renderRating(item.ratingAvg)} <Text fontSize={"small"}>({item.ratingAvg})</Text>
                           </HStack>
-                        
+
                         </Box>
-                        
+
                     </Button>
                 </GridItem>
-              ))} 
+              ))}
           </Grid>
         </Box>
       </Box>

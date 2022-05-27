@@ -4,6 +4,7 @@ import Head from 'next/head'
 import ProfileDetail from "../../components/proflie/ProfileDetail"
 import styles from '../../styles/CreatePost.module.scss'
 import { gql, useQuery } from "@apollo/client";
+import { isIfStatement } from "typescript";
 
 interface Props {
     id: string
@@ -14,9 +15,19 @@ query ($id: MongoID!){
     userById(_id: $id){
       firstName
       lastName
-      followings
-      posts
+      followings{
+        followingId
+      }
+      followers{
+        followerId
+      }
+      posts{
+        _id
+        title
+      }
       image
+      email
+      _id
     }
   }
 `
@@ -24,6 +35,13 @@ const ProfilePage: NextPage<Props> = ({ id }) => {
     const {loading, error, data, refetch} = useQuery(GET_PROFILE_BY_ID, {
         variables: { id }
     })
+    if(loading){
+        return(
+            <div>
+                <h1>Loading</h1>
+            </div>
+        )
+    }
     return (
         <div>
             <Head>
@@ -31,7 +49,7 @@ const ProfilePage: NextPage<Props> = ({ id }) => {
                 <meta name="viewport" content="initial-scale=1.0, width=device-width" />
             </Head>
             <Stack className={styles.container}>
-                <ProfileDetail profile={data?.userById}></ProfileDetail>
+                <ProfileDetail profile={data?.userById} refetch={refetch}></ProfileDetail>
             </Stack>
         </div>
     )

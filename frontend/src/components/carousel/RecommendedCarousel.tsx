@@ -38,7 +38,12 @@ import SwiperCore, { Autoplay, Pagination, Navigation } from "swiper";
 
 const headerMargin = { base: 0, md: 0, lg: 6, xl: 8 };
 
-const RecommendedCarousel: NextPage<{ data: any }> = ({ data }) => {
+type Props = {
+    data:any
+  }
+
+
+const RecommendedCarousel = ({ data }:Props) => {
     const swiperRef = useRef(null) as any
     const [recommendPost, setRecommendPost] = useState<any[]>([])
     useEffect(() => {
@@ -104,7 +109,8 @@ const RecommendedCarousel: NextPage<{ data: any }> = ({ data }) => {
                                     style={{ width: '100%', textAlign: 'center' }}
                                     onMouseEnter={() => swiperRef.current.swiper.autoplay.stop()}
                                     onMouseLeave={() => swiperRef.current.swiper.autoplay.start()}
-                                ><RecommendedCard item={card} />
+                                >
+                                    <RecommendedCard item={card} ></RecommendedCard>
                                 </SwiperSlide>
                             )
                         })}

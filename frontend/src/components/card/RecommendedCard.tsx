@@ -24,8 +24,11 @@ import {
 import { StarIcon } from '@chakra-ui/icons'
 import styles from '../../styles/Home.module.scss'
 
+type Props = {
+    item:any
+  }
 
-const RecommendedCard: NextPage<{ item: any }> = ({ item }) => {
+const RecommendedCard = ({ item }:Props) => {
     const router = useRouter()
     const renderRating = (rating: number) => {
         var starList: any[] = [];
@@ -46,7 +49,7 @@ const RecommendedCard: NextPage<{ item: any }> = ({ item }) => {
         router.push(`/post/${item?._id}`)
     }
     return (
-        <Button
+        <Box
             height={220}
             width={380}
             // minWidth={400}
@@ -98,7 +101,7 @@ const RecommendedCard: NextPage<{ item: any }> = ({ item }) => {
                     {renderRating(item.rating)}
                 </Box> */}
             </Box>
-        </Button>
+        </Box>
     )
 }
 

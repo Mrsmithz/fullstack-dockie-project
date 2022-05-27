@@ -51,3 +51,19 @@ export const GET_ALL_POST_WITH_AUTHOR = gql`
     }
   }
 `
+
+export const GET_NEWEST_POST = gql`
+query {
+  newestPosts {
+    _id
+    title
+    author {
+      firstName
+      lastName
+    }
+    ratingAvg
+    createdAt
+    images
+  }
+}
+`

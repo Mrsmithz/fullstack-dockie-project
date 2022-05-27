@@ -25,4 +25,5 @@ export const VIEW_POST = gql`
             }
         }
     }
+}
 `

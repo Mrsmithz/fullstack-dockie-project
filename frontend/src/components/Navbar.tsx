@@ -66,8 +66,7 @@ export default function Simple() {
   const notiHover = useColorModeValue("blue.100", "blue.500");
 
   const handleSignout = async () => {
-    await signOut()
-    router.push('/')
+    await signOut({ callbackUrl: "/" })
   }
   if (!token) {
     return (

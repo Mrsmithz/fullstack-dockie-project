@@ -4,7 +4,7 @@ import Head from 'next/head'
 import ProfileDetail from "../../components/proflie/ProfileDetail"
 import styles from '../../styles/CreatePost.module.scss'
 import { gql, useQuery } from "@apollo/client";
-import { isIfStatement } from "typescript";
+import { getSession } from "next-auth/react"
 
 interface Props {
     id: string
@@ -41,7 +41,7 @@ query ($id: MongoID!){
     }
   }
 `
-const ProfilePage: NextPage<Props> = ({ id }) => {
+const ProfilePage: NextPage<Props> = ({ id, session }) => {
     const {loading, error, data, refetch} = useQuery(GET_PROFILE_BY_ID, {
         variables: { id }
     })
@@ -59,17 +59,19 @@ const ProfilePage: NextPage<Props> = ({ id }) => {
                 <meta name="viewport" content="initial-scale=1.0, width=device-width" />
             </Head>
             <Stack className={styles.container}>
-                <ProfileDetail profile={data?.userById} refetch={refetch}></ProfileDetail>
+                <ProfileDetail profile={data?.userById} refetch={refetch} session={session}></ProfileDetail>
             </Stack>
         </div>
     )
 }
 
-export const getServerSideProps = (context: any) => {
+export const getServerSideProps = async(context: any) => {
     const { id } = context.query;
+    const session = await getSession(context)
     return {
         props: {
             id,
+            session
         },
     };
 };

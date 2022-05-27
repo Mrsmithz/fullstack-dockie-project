@@ -1,2 +1,5 @@
 import './post'
 import './user'
+import './download'
+import './comment'
+import './follow'

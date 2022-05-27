@@ -21,7 +21,7 @@ export const createComment = schemaComposer.createResolver({
         postId:`MongoID!`
     },
     resolve: async ({ args, context } : ResolverResolveParams<IComment, IGraphqlContext, ICreateComment>) => {
-        const { user : { _id : userId}} = context
+        const { user : { _id : userId }} = context
         const { comment, postId } = args
         const result = await Comment.create({comment, postId, authorId: userId})
         return result

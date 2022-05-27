@@ -3,7 +3,7 @@ import { UserTC } from "../../model/User"
 import { TagTC, Tag} from '../../model/Tag'
 import { IPost } from "../../types/post/Post.type"
 import { CommentTC } from '../../model/Comment'
-
+import { DownloadTC } from '../../model/Download'
 PostTC.addRelation(
     'author',
     {
@@ -39,7 +39,30 @@ PostTC.addRelation(
         }
     }
 )
-
+PostTC.addRelation(
+    'downloads',
+    {
+        resolver: () => DownloadTC.mongooseResolvers.findMany(),
+        projection: { _id : true},
+        prepareArgs:{
+            filter: (post) => {
+                return { postId : post._id}
+            }
+        }
+    }
+)
+PostTC.addRelation(
+    'downloadsCount',
+    {
+        resolver: () => DownloadTC.mongooseResolvers.count(),
+        projection: { _id: true},
+        prepareArgs:{
+            filter: (post) => {
+                return { postId: post._id }
+            }
+        }
+    }
+)
 PostTC.addFields({
     ratingAvg : {
         type: 'Float',

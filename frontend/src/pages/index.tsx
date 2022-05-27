@@ -18,33 +18,10 @@ import { useSession, getSession, signIn, signOut } from "next-auth/react"
 import { GET_ALL_POSTS, GET_ALL_POST_FOR_FILTER_AUTHOR } from "../graphql/post"
 import { ME } from '../graphql/me'
 
-const historyPostData = [
-  {
-    id: "history1",
-    title: "History Post 1",
-    duration: "1m"
-  },
-  {
-    id: "history2",
-    title: "History Post 2",
-    duration: "2m"
-  },
-  {
-    id: "history3",
-    title: "History Post 3",
-    duration: "3m"
-  },
-  {
-    id: "history4",
-    title: "History Post 4",
-    duration: "4m"
-  }
-]
 
 const Home: NextPage = () => {
-  const [filter, setFilter] = useState<any[]>([])
   const { loading, error, data } = useQuery(GET_ALL_POSTS)
-  const { loading: loadingFilter, error: errorFilter, data: dataFilter} = useQuery(GET_ALL_POST_FOR_FILTER_AUTHOR)
+  const { loading: loadingFilter, error: errorFilter, data: dataFilter, refetch : refetchFilter} = useQuery(GET_ALL_POST_FOR_FILTER_AUTHOR)
   const { loading: loadingMe, error: errorMe, data: dataMe, refetch} = useQuery(ME)
   const { data: token, status } = useSession()
 
@@ -54,6 +31,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     console.log("Refetch")
     refetch()
+    refetchFilter()
   }, [])
   if(loading || loadingFilter){
     return <p>Loading...</p>
@@ -97,12 +75,7 @@ const Home: NextPage = () => {
 
                 {/* History Grid */}
                 <GridItem colSpan={{ base: 12, md: 12, lg: 5 }}>
-                  <h1 className={styles.homeHeader}>History Post</h1>
-                  {
-                    !!dataMe.me.recentView && (
-                      <Text>No Recent Post</Text>
-                    )
-                  }
+                  <h1 className={styles.homeHeader}>Recent View Post</h1>
                   {
                     !dataMe.me.recentView && (
                       <HistoryPostList posts={dataMe?.me.recentViews} />

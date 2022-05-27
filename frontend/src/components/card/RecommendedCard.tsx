@@ -1,6 +1,5 @@
 import type { NextPage } from 'next'
 import React, { useEffect, useState } from "react"
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import {
     Box,
@@ -20,6 +19,7 @@ import {
     TagLeftIcon,
     TagRightIcon,
     TagCloseButton,
+    Image
 } from '@chakra-ui/react';
 import { StarIcon } from '@chakra-ui/icons'
 import styles from '../../styles/Home.module.scss'
@@ -56,9 +56,8 @@ const RecommendedCard = ({ item }:Props) => {
     }
     return (
         <Button
-            height={220}
+            height={160}
             width={380}
-            // minWidth={400}
             style={{
                 whiteSpace: "normal",
                 wordWrap: "break-word",
@@ -84,28 +83,27 @@ const RecommendedCard = ({ item }:Props) => {
             }}
             onClick={goNext}
         >
-            <Box w={'100%'} h={'100%'} ml={3}>
+            <Box display={"flex"} alignItems={"center"} justifyContent={"center"} ml={3}>
                 <HStack w={'100%'}>
-
-                    {/* <Image src={item.imgUrl} alt={'logo'} width={50} height={50} /> */}
-
+                    <Image
+                        width={"30%"} height={"30%"}
+                        borderRadius="full"
+                        src={
+                            process.env.NEXT_PUBLIC_API_LINK + "/file/" + item.images[0]
+                        }
+                        alt="Dan Abramov"
+                    />
                     <Box textAlign={'left'} pt={2} pl={2}>
                         {/* <Text fontSize={18} >{item.author}</Text> */}
-                        <Text fontSize={18} >Title : {item.title}</Text>
+                        <Text marginBottom={2} fontSize={18} >Title : {item.title}</Text>
+                        <HStack>
+                            {renderRating(item.ratingAvg)}
+                            <Text fontSize={"small"}>({item.ratingAvg})</Text>
+                        </HStack>
+                        
                     </Box>
 
                 </HStack>
-                <Text textAlign={'left'} mt={3} noOfLines={3} color={useColorModeValue('#8A8383', 'gray.200')} fontSize={14}>{item?.document.text}</Text>
-                <Flex mt={4}>
-                    {/* {item.tag.map((item: string, index: number) => (
-                        <Tag size='md' bg={'#7C9473'} color={'snow'} borderRadius='full' key={index} ml={1} maxWidth={'30%'} px={2}>
-                            <TagLabel textAlign={'center'} mt={1}>{item}</TagLabel>
-                        </Tag>
-                    ))} */}
-                </Flex>
-                {/* <Box w={'100%'} mt={3} textAlign={'left'}>
-                    {renderRating(item.rating)}
-                </Box> */}
             </Box>
         </Button>
     )

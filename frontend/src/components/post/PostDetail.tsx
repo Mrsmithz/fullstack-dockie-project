@@ -330,7 +330,7 @@ const PostDetail = ({ addComment, ratePost, deleteComment, post, myRating, owner
                                         <HStack>
                                             <Link href={`/profile/${item?.authorId}`}>{`${item.author.firstName} ${item.author.lastName}`}</Link>
                                             <Text>
-                                                {item.createdAt}
+                                                {new Date(item.createdAt).toUTCString()}
                                             </Text>
                                         </HStack>
                                         <Text>{item.comment}</Text>

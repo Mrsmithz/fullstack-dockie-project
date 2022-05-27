@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
 import { composeMongoose } from 'graphql-compose-mongoose'
 import { ITag } from '../types/tag/tag.type'
-const TagSchema = new Schema({
+const TagSchema = new Schema<ITag>({
     name:{
         type: String,
         required: true,

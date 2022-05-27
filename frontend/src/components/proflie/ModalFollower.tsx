@@ -16,8 +16,7 @@ import {
     Center
 } from '@chakra-ui/react'
 import { Follower } from "../../types/Follower"
-import { useRouter } from 'next/router'
-import { useCallback } from 'react'
+import Link from "next/link"
 
 type Props = {
     isOpen: boolean,
@@ -26,11 +25,6 @@ type Props = {
     followers: Follower[]
 }
 const ModalFollower = ({ isOpen, onOpen, onClose, followers }: Props) => {
-    const router = useRouter()
-    const goAnotherProfile = useCallback((id) => {
-        onClose()
-        router.push("/profile/" + id)
-    }, [])
     return (
         <>
             <Modal isOpen={isOpen} onClose={() => onClose()}>
@@ -50,10 +44,6 @@ const ModalFollower = ({ isOpen, onOpen, onClose, followers }: Props) => {
                                             <Text mt={1}>
                                                 {follower.follower.firstName} {follower.follower.lastName}
                                             </Text>
-                                        </GridItem>
-                                        <GridItem colStart={10} colEnd={13}>
-                                            <Button h={7} fontSize={15} colorScheme="blue" 
-                                            onClick={() => goAnotherProfile(follower.followerId)}>Profile</Button>
                                         </GridItem>
                                     </Grid>
                                     <Divider mb={3} />

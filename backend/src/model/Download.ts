@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose'
 import { composeMongoose } from 'graphql-compose-mongoose'
 import { IDownload } from '../types/download/download.type'
 
-const DownloadSchema = new Schema({
+const DownloadSchema = new Schema<IDownload>({
     postId:{
         type: Schema.Types.ObjectId,
         ref: 'Post',

@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
 import { composeMongoose } from 'graphql-compose-mongoose'
 import { IFollow } from '../types/follow/follow.type'
-const FollowSchema = new Schema({
+const FollowSchema = new Schema<IFollow>({
     followerId:{
         type:Schema.Types.ObjectId,
         index:true,

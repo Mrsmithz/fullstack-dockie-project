@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import axios from "axios";
+import https from 'https'
 export default NextAuth({
   // Configure one or more authentication providers
   providers: [
@@ -19,7 +20,11 @@ export default NextAuth({
         email: token.email,
         image: token.picture,
       };
-      const result = await axios.post(`${process.env.NEXT_PUBLIC_API_LINK}/auth/login`, loginPayload)
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      })
+      const instance = axios.create( { httpsAgent : agent})
+      const result = await instance.post(`${process.env.NEXT_PUBLIC_API_LINK}/auth/login`, loginPayload)
       if (account) {
         token.accessToken = result.data.accessToken;
       }

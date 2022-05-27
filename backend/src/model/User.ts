@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose'
 import { composeMongoose } from 'graphql-compose-mongoose'
 import { IUser } from '../types/user/User.type'
 
-const UserSchema = new Schema({
+const UserSchema = new Schema<IUser>({
     firstName:{
         type: String,
         required: true
@@ -28,12 +28,6 @@ const UserSchema = new Schema({
         }
     ],
     posts:[
-        {
-            type:Schema.Types.ObjectId,
-            ref:'Post'
-        }
-    ],
-    recentView:[
         {
             type:Schema.Types.ObjectId,
             ref:'Post'

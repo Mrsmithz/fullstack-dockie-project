@@ -15,13 +15,13 @@ import { BsPeopleFill } from 'react-icons/bs'
 import { MdFeaturedPlayList, MdLiveHelp } from 'react-icons/md'
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { useSession, getSession, signIn, signOut } from "next-auth/react"
-import { GET_ALL_POSTS, GET_ALL_POST_FOR_FILTER_AUTHOR } from "../graphql/post"
+import { GET_ALL_POSTS, GET_NEWEST_POST } from "../graphql/post"
 import { ME } from '../graphql/me'
 
 
 const Home: NextPage = () => {
   const { loading, error, data } = useQuery(GET_ALL_POSTS)
-  const { loading: loadingFilter, error: errorFilter, data: dataFilter, refetch : refetchFilter} = useQuery(GET_ALL_POST_FOR_FILTER_AUTHOR)
+  const { loading : loadingNewest, error : errorNewest, data : dataNewest, refetch : refetchNewest} = useQuery(GET_NEWEST_POST)
   const { loading: loadingMe, error: errorMe, data: dataMe, refetch} = useQuery(ME)
   const { data: token, status } = useSession()
 
@@ -31,17 +31,14 @@ const Home: NextPage = () => {
   useEffect(() => {
     console.log("Refetch")
     refetch()
-    refetchFilter()
+    refetchNewest()
   }, [])
-  if(loading || loadingFilter){
+  if(loading || loadingNewest){
     return <p>Loading...</p>
   }
 
   if (status === "loading") {
     return <p>Loading...</p>
-  }
-  if (dataFilter) {
-    console.log(dataFilter)
   }
   return (
     <Box className={styles.container}>
@@ -68,8 +65,10 @@ const Home: NextPage = () => {
                 <GridItem colSpan={{ base: 12, md: 12, lg: 7 }}>
 
                   <h1 className={styles.homeHeader}>Newest Post</h1>
-
-                  <NewestPostList posts={dataFilter?.posts} />
+                  {!!dataNewest && (
+                    <NewestPostList posts={dataNewest.newestPosts} />
+                  )}
+                  
 
                 </GridItem>
 
@@ -77,7 +76,7 @@ const Home: NextPage = () => {
                 <GridItem colSpan={{ base: 12, md: 12, lg: 5 }}>
                   <h1 className={styles.homeHeader}>Recent View Post</h1>
                   {
-                    !dataMe.me.recentView && (
+                    dataMe.me != undefined && (
                       <HistoryPostList posts={dataMe?.me.recentViews} />
                     )
                   }

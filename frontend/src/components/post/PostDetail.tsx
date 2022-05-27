@@ -335,19 +335,7 @@ const PostDetail = ({ addComment, ratePost, deleteComment, post, myRating, owner
                                         </HStack>
                                         <Text>{item.comment}</Text>
                                     </GridItem>
-                                    {owner ?
-                                        <IconButton
-                                            colorScheme='red'
-                                            aria-label='Delete comment'
-                                            size="sm"
-                                            width={8}
-                                            position="absolute"
-                                            right="0.5rem"
-                                            top="0.5rem"
-                                            icon={<DeleteIcon />}
-                                            onClick={() => handleDeleteButton(item._id)}
-                                        />
-                                        : item?.authorId === myId &&
+                                    { item?.authorId === myId &&
                                         <IconButton
                                             colorScheme='red'
                                             aria-label='Delete comment'

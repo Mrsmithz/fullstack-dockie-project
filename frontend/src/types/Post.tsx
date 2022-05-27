@@ -7,15 +7,18 @@ export type Post = {
     contact: string,
     tag: string[],
     status: string,
-    image: File[],
-    comment: Comment[],
+    images: string[],
+    comments: Comment[],
     authorId: string,
     author: {
         firstName: string,
         lastName: string,
-        email: string
+        email: string,
+        image: string
     },
     document: {
         text: string
     }
+    ratingAvg?: number
+
 }

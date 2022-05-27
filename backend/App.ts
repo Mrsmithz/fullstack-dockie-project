@@ -34,7 +34,7 @@ app.use(express.json())
 
 app.use(`${ContextPath}/post`, isAuthenticated, PostRouter)
 
-app.use(`${ContextPath}/file`, isAuthenticated, FileRouter)
+app.use(`${ContextPath}/file`, FileRouter)
 
 app.use(`${ContextPath}/auth`, AuthRouter)
 

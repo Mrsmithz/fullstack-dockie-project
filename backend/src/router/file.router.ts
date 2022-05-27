@@ -6,12 +6,13 @@ import { uploadImages } from "../middlewares/multerUpload"
 import { UploadFiles } from "../types/rest/UploadFiles.type"
 import { imageUpload } from "../utils/fileUpload"
 import { HttpStatus } from "../utils/HttpStatus.enum"
+import isAuthenticated from "../middlewares/isAuthenticated"
 const router : Router = Router()
 
 
-router.post('/ocr', uploadFile, DocumentProcessor)
+router.post('/ocr', isAuthenticated, uploadFile, DocumentProcessor)
 
-router.post('/upload/images', uploadImages, async (req, res, next) => {
+router.post('/upload/images', isAuthenticated, uploadImages, async (req, res, next) => {
     try{
         const uploads = req.files as UploadFiles
         const result = await imageUpload(uploads.images)

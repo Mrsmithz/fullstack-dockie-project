@@ -13,7 +13,8 @@ const size = { base: "100%", md: "80%", lg: "60%" };
 
 type Props = {
     profile: Profile,
-    refetch: Function
+    refetch: Function,
+    session: any
 }
 
 const FOLLOW_USER_MUTATION = gql`
@@ -31,7 +32,7 @@ mutation($followingId: MongoID!){
 }
 `
 
-const ProfileDetail = ({ profile, refetch }: Props) => {
+const ProfileDetail = ({ profile, refetch, session }: Props) => {
     const toast = useToast()
     const backgroundProfileDetailColor = useColorModeValue("blue.100", "gray.500")
     const backgroundCollectoins = useColorModeValue("blue.300", "gray.700")
@@ -70,13 +71,15 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
     }, [])
 
     const checkProfile = useCallback(async () => {
-        const userId = await axios.get("http://localhost:8001/api/v1/me")
+        const userId = await axios.get(`${process.env.NEXT_PUBLIC_API_LINK}/me`, {headers:{
+            Authorization: `Bearer ${session?.accessToken}`
+        }})
         if (profile?._id == userId.data._id) {
             setMyProfile(true)
         } else {
             setMyProfile(false)
         }
-        const checkFollowing = profile.followers.some(
+        const checkFollowing = profile?.followers.some(
             (follower) => follower.followerId == userId.data._id
         );
         if (checkFollowing) {
@@ -86,11 +89,10 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
         }
         setRenderFollowButton(true)
     }, [profile, setFollowButton, setRenderFollowButton, setMyProfile])
+
     useEffect(() => {
-        setRenderFollowButton(false)
-        setFollowButton(true)
         checkProfile()
-    }, [checkProfile, setRenderFollowButton, setFollowButton])
+    }, [checkProfile])
     return (
         <>
             <Center
@@ -123,10 +125,10 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
                         </Center>
                         <Center mt={5}>
                             {renderFollowButton && followButton && myProfile == false && (
-                                <Button colorScheme="blue" variant="solid" onClick={() => followUser()}>+ Follow</Button>
+                                <Button colorScheme="blue" variant="solid" onClick={followUser}>+ Follow</Button>
                             )}
                             {renderFollowButton && !followButton && myProfile == false && (
-                                <Button colorScheme="red" variant="solid" onClick={() => unFollowUser()}>Un follow</Button>
+                                <Button colorScheme="red" variant="solid" onClick={unFollowUser}>Un follow</Button>
                             )}
                         </Center>
                     </GridItem>

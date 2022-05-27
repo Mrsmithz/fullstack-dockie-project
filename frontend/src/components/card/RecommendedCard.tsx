@@ -23,6 +23,8 @@ import {
 } from '@chakra-ui/react';
 import { StarIcon } from '@chakra-ui/icons'
 import styles from '../../styles/Home.module.scss'
+import { useMutation } from '@apollo/client';
+import { VIEW_POST } from '../../graphql/me';
 
 type Props = {
     item:any
@@ -30,6 +32,7 @@ type Props = {
 
 const RecommendedCard = ({ item }:Props) => {
     const router = useRouter()
+    const [view, {data: dataView, loading: loadinView, error: errorView}] = useMutation(VIEW_POST)
     const renderRating = (rating: number) => {
         var starList: any[] = [];
         for (let i = 1; i <= 5; i++) {
@@ -46,6 +49,9 @@ const RecommendedCard = ({ item }:Props) => {
         return starList;
     }
     const goNext = () => {
+        view({ variables : {
+            postId: item._id
+        }})
         router.push(`/post/${item?._id}`)
     }
     return (

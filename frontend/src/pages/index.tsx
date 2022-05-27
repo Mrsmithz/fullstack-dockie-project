@@ -48,6 +48,7 @@ const Home: NextPage = () => {
   const { loading: loadingFilter, error: errorFilter, data: dataFilter} = useQuery(GET_ALL_POST_FOR_FILTER)
   const { loading: loadingMe, error: errorMe, data: dataMe} = useQuery(ME)
   const { data: token, status } = useSession()
+  // console.log(token, "c")
   // const [ session, loadingsss ] = useSession()
   // console.log(data, token, "x")
   // console.log(session, "dd")

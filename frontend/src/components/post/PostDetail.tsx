@@ -16,6 +16,8 @@ import {
     Input,
     useDisclosure,
     IconButton,
+    Avatar,
+    HStack
 } from "@chakra-ui/react";
 import RatingModal from './RatingModal'
 import DeleteCommentModal from './DeleteCommentModal'
@@ -23,10 +25,11 @@ import { DeleteIcon } from '@chakra-ui/icons'
 
 import { Comment } from "../../types/Comment"
 import { Post } from "../../types/Post"
-
+import { useSession } from "next-auth/react"
 import {
     checkComment
 } from '../../utils/feedbackPost';
+import axios from "axios"
 
 import Link from "next/link"
 
@@ -37,14 +40,16 @@ type Props = {
     addComment: Function
     ratePost: Function
     deleteComment: Function,
-    post: Post
+    post: Post,
+    myRating: number
 }
 
-const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Props) => {
-    const [newComment, setNewComment] = useState("");
-    const [rating, setRating] = useState(postData.ratings);
-    const [newRating, setNewRating] = useState(0);
+const PostDetail = ({ postData, addComment, ratePost, deleteComment, post, myRating }: Props) => {
+    const { data: token, status } = useSession()
 
+    const [newComment, setNewComment] = useState("");
+    // const [rating, setRating] = useState(myRating);
+    const [newRating, setNewRating] = useState(0);
     const [deleteCommentTemp, setDeleteCommentTemp] = useState({});
 
     const [updateKey, setUpdateKey] = useState(0);
@@ -56,7 +61,8 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
         onClose: onCloseDeleteModal
     } = useDisclosure()
 
-    const renderAvgRating = (rating: number) => {
+
+    const renderAvgRating = (rating?: any) => {
         var starList: any[] = [];
         for (let i = 1; i <= 5; i++) {
             if (i <= rating) {
@@ -90,9 +96,28 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
 
     const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
 
-    const formatCommentDate = (date: Date) => {
-        return date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate() + " " + zeroPad(date.getHours(), 2) + ":" + zeroPad(date.getMinutes(), 2);
+    // const formatCommentDate = (date: Date) => {
+    //     return date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate() + " " + zeroPad(date.getHours(), 2) + ":" + zeroPad(date.getMinutes(), 2);
+    // }
+
+    const getImage = async (image: string) => {
+        console.log(token, "2")
+        const url = await axios.get(`${process.env.NEXT_PUBLIC_API_LINK}/file/${image}`, { headers: { Authorization: `Bearer ${token?.accessToken}` },responseType: "arraybuffer" })
+        const data = `data:${url.headers['content-type']};base64,${new Buffer(url.data).toString('base64')}`;
+        console.log(data)
+        // console.log(URL.createObjectURL(url.data), "ff")
+        // const res = url.dataURL
+        // let data = new Uint8Array(url.data);
+        // let raw = String.fromCharCode.apply(null, data);
+        // let base64 = btoa(raw);
+        // let src = "data:image;base64," + base64;
+
+
+        // console.log(src, "rr")
+        return data
     }
+
+
 
     const addNewComment = () => {
         if (checkComment(newComment.trim()) === "") {
@@ -103,14 +128,13 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
     }
 
     const handleRating = (newRating: number) => {
-        if (newRating !== rating) {
+        if (newRating !== myRating) {
             setNewRating(newRating)
             onOpen()
         }
     }
 
     const handleRatingModal = () => {
-        setRating(newRating)
         ratePost(newRating)
         onClose()
         setUpdateKey(updateKey + 1)
@@ -148,11 +172,11 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
                         <GridItem colSpan={{ base: 12, lg: 3, md: 12, sm: 12 }}>
                             <Flex justify="center" align="center">
                                 <Link href={`/profile/${post?.authorId}`} passHref>
-                                    <Image
+                                    <Avatar
                                         src={
-                                            postData.imgUrl
+                                            post?.author.image
                                         }
-                                        alt="image"
+                                        cursor={'pointer'}
                                         boxSize={{ base: 200, lg: 200, md: 400, sm: 400 }}
                                     />
                                 </Link>
@@ -188,7 +212,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
                                     h={200}
                                     overflowY="auto"
                                 >
-                                    <Text fontSize={15}> {post?.document.text} </Text>
+                                    <Text fontSize={15}> {post?.description} </Text>
                                 </Box>
                                 <Grid templateColumns="repeat(12, 1fr)">
                                     <GridItem
@@ -206,19 +230,21 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
                                     </GridItem>
                                 </Grid>
                                 <Text fontSize={16} marginTop="0.5rem" paddingLeft="0.5rem">Permission : {post?.status} </Text>
-                                <Box marginTop="0.25rem" paddingLeft="0.75rem">
-                                    <Text>Average Rating</Text>
-                                    <Stack direction="row" pr={10}>
-                                        {renderAvgRating(postData.avgRating)}
-                                    </Stack>
-                                    <Text paddingLeft="0.6rem">From ... User</Text>
+                                <Box marginTop="0.25rem" paddingLeft="0.5rem">
+                                    <HStack>
+                                        <Text>Average Rating :</Text>
+                                        <Stack direction="row" pr={10}>
+                                            {renderAvgRating(post?.ratingAvg)}
+                                        </Stack>
+                                        {/* <Text paddingLeft="0.6rem">From ... User</Text> */}
+                                    </HStack>
                                 </Box>
                             </Box>
                             <Center mt={5}>
                                 <Stack direction="row" display="flex" alignItems="center">
                                     <Text>Your Rating : </Text>
                                     <Stack direction="row" pr={10}>
-                                        {renderRating(rating)}
+                                        {renderRating(myRating)}
                                     </Stack>
                                 </Stack>
                             </Center>
@@ -237,8 +263,18 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
                         <GridItem colSpan={{ base: 12, lg: 8, md: 12, sm: 12 }} mt={5}>
                             <Text fontSize={20}>Preview</Text>
                             <SimpleGrid columns={3} spacing={4}>
-
-                                <Box bg={"gray.300"} h={{ base: 150, lg: 220 }}></Box>
+                                {/* {
+                                    post && post?.images.map((image: string) => {
+                                        return (
+                                            <Box bg={"gray.300"} h={{ base: 150, lg: 220 }} key={image}>
+                                                <img src={`${process.env.NEXT_PUBLIC_API_LINK}/file/${image}`} />
+                                            </Box>
+                                        )
+                                    })
+                                } */}
+                                <Box bg={"gray.300"} h={{ base: 150, lg: 220 }}>
+                                    {/* <img src={URL.createObjectURL(images[i])} /> */}
+                                </Box>
                                 <Box bg={"gray.300"} h={{ base: 150, lg: 220 }}></Box>
                                 <Box bg={"gray.300"} h={{ base: 150, lg: 220 }}></Box>
                             </SimpleGrid>
@@ -251,7 +287,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
 
                         {/* User Comment */}
                         <GridItem colSpan={12} m={3} pl={{ base: 1, lg: 5 }}>
-                            {postData.comment.map((item: Comment, index: number) => (
+                            {post?.comments.map((item: Comment, index: number) => (
                                 <Grid
                                     templateColumns="repeat(12, 1fr)"
                                     bg={commentBoxColor}
@@ -273,7 +309,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
                                         </Center>
                                     </GridItem>
                                     <GridItem colSpan={{ base: 12, lg: 10, md: 9, sm: 12 }} mt={5} textAlign={{ base: "center", md: "start" }}>
-                                        <Text>{item.author} {formatCommentDate(item.createdDate)} </Text>
+                                        <Text>{item.authorId} {item.createdAt} </Text>
                                         <Text>{item.comment}</Text>
                                     </GridItem>
                                     <IconButton

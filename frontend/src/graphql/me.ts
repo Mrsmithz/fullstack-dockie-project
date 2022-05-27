@@ -2,14 +2,27 @@ import { gql, useQuery } from "@apollo/client";
 
 export const ME = gql
 `
-query {
-    me {
+    query {
+        me {
         _id
         firstName
         lastName
-        email
-        recentViews{
-          postId
+        recentViews {
+            post {
+                _id
+                title
+            }
+        }
+        }
+    }
+`
+
+export const VIEW_POST = gql`
+    mutation ($postId: MongoID!) {
+        view (postId: $postId) {
+            post {
+                title
+            }
         }
     }
 }

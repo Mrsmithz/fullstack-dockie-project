@@ -53,12 +53,17 @@ const PreviewPost = ({ postData, document, backPage, file }: Props) => {
     }else if(postData.titleType === "1"){
       formData.append("title", postData.titleOcr)
     }
+    postData.tag.map((tag)=>{
+      formData.append("tagId", tag._id)
+    })
     formData.append("status", postData.permission)
     formData.append("description", postData.description)
     formData.append("document", JSON.stringify(document))
-    axios.defaults.headers.common["Authorization"] = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOGI4YjE0MWZhMTYxNzE2N2QzODk5OSIsImlhdCI6MTY1MzQ2ODY2MywiZXhwIjoxNjU0MDczNDYzfQ.cJ7cy7IsPvmCZwuQ7PxSddBLYfJ2Pm5NW2ruV3aIDLA`
-    const res = await axios.post(`${API_LINK}/post/create`, formData)
-    console.log(res.data, "bn")
+    const res = await axios.post(`${API_LINK}/post/create`, formData, {
+      headers: {
+        Authorization: 'Bearer ' + token?.accessToken
+      }
+    })
     router.push('/')
   }
 
@@ -144,7 +149,7 @@ const PreviewPost = ({ postData, document, backPage, file }: Props) => {
 
                     {postData.tag.map((item, index) => (
                       <Tag ml={2} colorScheme="teal" key={`tag-${index}`}>
-                        { item}
+                        { item.name}
                       </Tag>
                     ))}
                   </GridItem>

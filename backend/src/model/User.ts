@@ -1,16 +1,26 @@
 import { Schema, model } from 'mongoose'
-import timestamp from 'mongoose-timestamp'
 import { composeMongoose } from 'graphql-compose-mongoose'
-import { schemaComposer } from 'graphql-compose'
+import { IUser } from '../types/user/User.type'
 
-const UserSchema = new Schema({
-    firstName:String,
-    lastName:String,
-    image:{
-        type:Schema.Types.ObjectId,
-        ref:'File'
+const UserSchema = new Schema<IUser>({
+    firstName:{
+        type: String,
+        required: true
     },
-    email:String,
+    lastName:{
+        type: String,
+        required: true
+    },
+    image:{
+        type: String,
+        required: true
+    },
+    email:{
+        type:String,
+        required:true,
+        unique:true,
+        index:true
+    },
     followings:[
         {
             type:Schema.Types.ObjectId,
@@ -22,35 +32,13 @@ const UserSchema = new Schema({
             type:Schema.Types.ObjectId,
             ref:'Post'
         }
-    ],
-    recentView:[
-        {
-            type:Schema.Types.ObjectId,
-            ref:'Post'
-        }
     ]
-})
+}, {timestamps: true})
 
-UserSchema.plugin(timestamp)
-const User = model('User', UserSchema)
+
+const User = model<IUser>('User', UserSchema)
 const customizationOptions = {}
 const UserTC = composeMongoose(User, customizationOptions)
 
-schemaComposer.Query.addFields({
-    userById: UserTC.mongooseResolvers.findById(),
-    user: UserTC.mongooseResolvers.findOne(),
-    users: UserTC.mongooseResolvers.findMany(),
-    userCount: UserTC.mongooseResolvers.count()
-})
 
-schemaComposer.Mutation.addFields({
-    userCreateOne: UserTC.mongooseResolvers.createOne(),
-    userUpdateById: UserTC.mongooseResolvers.updateById(),
-    userUpdateOne: UserTC.mongooseResolvers.updateOne(),
-    userRemoveById: UserTC.mongooseResolvers.removeById(),
-    userRemoveOne: UserTC.mongooseResolvers.removeOne()
-})
-
-const schema = schemaComposer.buildSchema()
-
-export default schema
+export { User, UserTC}

@@ -30,6 +30,8 @@ import {
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { MoonIcon, SunIcon, BellIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
+import { useSession, signIn, signOut } from "next-auth/react"
+import { useRouter } from 'next/router';
 
 const NavLink = ({ children, page }: { children: ReactNode; page: string }) => (
   <NextLink href={page} passHref>
@@ -50,6 +52,9 @@ const NavLink = ({ children, page }: { children: ReactNode; page: string }) => (
 export default function Simple() {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const router = useRouter()
+  const { data: token, status } = useSession()
+
   const {
     isOpen: openModal,
     onOpen: onOpenModal,
@@ -60,6 +65,101 @@ export default function Simple() {
   const iconSwithTheme = useColorModeValue("yellow.300", "orange.500");
   const notiHover = useColorModeValue("blue.100", "blue.500");
 
+  const handleSignout = async () => {
+    await signOut()
+    router.push('/')
+  }
+  if (!token) {
+    return (
+      <>
+        <Box
+          bg={backgroundNav}
+          px={4}
+          position="fixed"
+          width={"100%"}
+          zIndex={100}
+        >
+          <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+            <IconButton
+              size={"md"}
+              icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+              aria-label={"Open Menu"}
+              display={{ md: "none" }}
+              onClick={isOpen ? onClose : onOpen}
+            />
+            <HStack spacing={10} alignItems={"center"}>
+              <Box ml={5}>
+                <Text fontSize="3xl">Dockie</Text>
+              </Box>
+            </HStack>
+            <Flex alignItems={"center"}>
+              <Stack
+                spacing={2}
+                direction={"row"}
+                display={{ base: "none", md: "flex" }}
+              >
+                <Menu>
+                  <MenuButton
+                    onClick={toggleColorMode}
+                    _hover={{ bg: iconSwithTheme }}
+                    w={10}
+                    borderRadius={100}
+                  >
+                    {colorMode === "light" ? (
+                      <MoonIcon w={5} h={10} />
+                    ) : (
+                      <SunIcon w={5} h={10} />
+                    )}
+                  </MenuButton>
+                </Menu>
+              </Stack>
+            </Flex>
+          </Flex>
+
+          {/* Mobile */}
+          {isOpen ? (
+            <Box pb={4} display={{ md: "none" }}>
+              <Stack as={"nav"} spacing={4} alignItems="center">
+                <NavLink page={"/"}>Home</NavLink>
+                <NavLink page={"/forum"}>Forum</NavLink>
+                <NavLink page={"/ranking"}>Ranking</NavLink>
+                <Box onClick={toggleColorMode}>
+                  {colorMode === "light" ? (
+                    <Text>Dark Mode</Text>
+                  ) : (
+                    <Text>Light Mode</Text>
+                  )}
+                </Box>
+                <Box onClick={onOpenModal}>Notification</Box>
+              </Stack>
+            </Box>
+          ) : null}
+
+          {/* Modal Noti */}
+          <Modal isOpen={openModal} onClose={onCloseModal} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Modal Title</ModalHeader>
+              <ModalCloseButton onClick={onCloseModal} />
+              <ModalBody>
+                <Box>Noti 1</Box>
+                <Box>Noti 2</Box>
+                <Box>Noti 3</Box>
+                <Box>Noti 4</Box>
+                <Box>Noti 5</Box>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button colorScheme="blue" mr={3} onClick={onCloseModal}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </Box>
+      </>
+    )
+  }
   return (
     <>
       <Box
@@ -141,7 +241,7 @@ export default function Simple() {
                 >
                   <Avatar
                     size={"sm"}
-                    src={"https://avatars.dicebear.com/api/male/username.svg"}
+                    src={token?.user?.image ? token.user.image : "https://avatars.dicebear.com/api/male/username.svg"}
                   />
                 </MenuButton>
                 <MenuList alignItems={"center"}>
@@ -149,7 +249,7 @@ export default function Simple() {
                   <Center>
                     <Avatar
                       size={"2xl"}
-                      src={"https://avatars.dicebear.com/api/male/username.svg"}
+                      src={token?.user?.image ? token.user.image : "https://avatars.dicebear.com/api/male/username.svg"}
                     />
                   </Center>
                   <br />
@@ -160,7 +260,7 @@ export default function Simple() {
                   <MenuDivider />
                   <MenuItem>Your Servers</MenuItem>
                   <MenuItem>Account Settings</MenuItem>
-                  <MenuItem>Logout</MenuItem>
+                  <MenuItem onClick={() => handleSignout()} >Logout</MenuItem>
                 </MenuList>
               </Menu>
             </Box>

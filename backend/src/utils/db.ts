@@ -15,11 +15,14 @@ const disconnectDB = async () => {
     return await mongoose.connection.close()
 }
 
-const clearDB = async () => {
+const clearDB = async (except : string[] = []) => {
     const collections = mongoose.connection.collections
     for (const key in collections){
-        const collection = collections[key]
-        await collection.deleteMany({})
+        if (!except.some(ex => ex === key)){
+            const collection = collections[key]
+            await collection.deleteMany({})
+        }
+
     }
 }
 export { connectDB, disconnectDB, clearDB}

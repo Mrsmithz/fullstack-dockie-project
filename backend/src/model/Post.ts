@@ -1,13 +1,15 @@
 import { Schema, model } from 'mongoose'
-import timestamp from 'mongoose-timestamp'
 import { composeMongoose } from 'graphql-compose-mongoose'
 import { schemaComposer } from 'graphql-compose'
-
-const PostSchema : Schema = new Schema({
-    title:String,
+import { IPost } from '../types/post/Post.type'
+const PostSchema : Schema = new Schema<IPost>({
+    title:{
+        type: String,
+        required:true
+    },
     description:String,
     contact:String,
-    tags:[
+    tagId:[
         {
             type:Schema.Types.ObjectId,
             ref:'Tag'
@@ -15,31 +17,32 @@ const PostSchema : Schema = new Schema({
     ],
     status:{
         type:String,
-        enum:['public', 'private']
+        enum:['public', 'private'],
+        required: true
     },
-    owner:{
+    authorId:{
         type:Schema.Types.ObjectId,
-        ref:'User'
+        ref:'User',
+        required: true,
+        index:true
     },
-    downloadFromUser:[
-        {
-            type:Schema.Types.ObjectId,
-            ref:'User'
-        }
-    ],
     ratings:[
         {
-            user:{
+            userId:{
                 type:Schema.Types.ObjectId,
                 ref:'User'
             },
-            rating:Number
+            rating:{
+                type: Number,
+                min: 0,
+                max: 5
+            }
         }
     ],
-    ratingAvg:Number,
     file:{
         type:Schema.Types.ObjectId,
-        ref:'File'
+        ref:'File',
+        required:true
     },
     images:[
         {
@@ -47,36 +50,13 @@ const PostSchema : Schema = new Schema({
             ref:'File'
         }
     ],
-    comments:[
-        {
-            type:Schema.Types.ObjectId,
-            ref:'Comment'
-        }
-    ],
-    document:Object
-})
-PostSchema.plugin(timestamp)
-const Post = model('Post', PostSchema)
+    document:{
+        type:Object,
+        required: true
+    }
+}, { timestamps:true })
+const Post = model<IPost>('Post', PostSchema)
 const customizationOptions = {}
 const PostTC = composeMongoose(Post, customizationOptions)
 
-export { Post }
-
-schemaComposer.Query.addFields({
-    postById: PostTC.mongooseResolvers.findById(),
-    post: PostTC.mongooseResolvers.findOne(),
-    posts: PostTC.mongooseResolvers.findMany(),
-    postCount: PostTC.mongooseResolvers.count()
-})
-
-schemaComposer.Mutation.addFields({
-    postCreateOne: PostTC.mongooseResolvers.createOne(),
-    postUpdateById: PostTC.mongooseResolvers.updateById(),
-    postUpdateOne: PostTC.mongooseResolvers.updateOne(),
-    postRemoveById: PostTC.mongooseResolvers.removeById(),
-    postRemoveOne: PostTC.mongooseResolvers.removeOne()
-})
-
-const schema = schemaComposer.buildSchema()
-
-export default schema
+export { Post, PostTC}

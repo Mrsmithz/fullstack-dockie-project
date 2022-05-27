@@ -1,15 +1,15 @@
-FROM node:16.14
+FROM node:16.14-alpine
 
 WORKDIR /usr/app
 
-COPY package*.json ./
+COPY package.json ./
 
-RUN npm install
+COPY yarn.lock ./
+
+RUN yarn install
 
 COPY ./ ./
 
-RUN npm run test
-
-EXPOSE 8349
+EXPOSE 8001
 
 CMD ["npm", "run", "build"]

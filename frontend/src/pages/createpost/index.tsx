@@ -11,9 +11,9 @@ import PreviewPost from '../../components/createpost/PreviewPost'
 
 import { Icon } from '@chakra-ui/react'
 import { MdDescription, MdEdit, MdVerified } from 'react-icons/md';
-
+import axios from 'axios'
 import styles from '../../styles/CreatePost.module.scss'
-
+import { useSession } from "next-auth/react"
 import { CreatedPost } from '../../types/CreatedPost'
 
 const tasks = [
@@ -33,6 +33,7 @@ const tasks = [
 
 const CreatePost: NextPage = () => {
 
+  const { data: token, status } = useSession()
   const [taskState, setTaskState] = useState(1);
   const [postData, setPostData] = useState<CreatedPost>({
     title: "",
@@ -40,24 +41,51 @@ const CreatePost: NextPage = () => {
     contact: "",
     tag: [],
     permission: "",
-    image: []
+    image: [],
+    titleOcr: "",
+    titleType: "1"
   });
   const [file, setFile] = useState<File | null>(null)
+  const [document, setDocument] = useState({
+    fileId: "",
+    text: "",
+    title: []
+  })
+
 
   const renderComponent = () => {
     if (taskState == 1) {
-      return (<UploadFile toNextPage={()=>goToPreviewPage()} file={file} setFile={(file:File | null)=>setFile(file)}/>);
+      return (<UploadFile toNextPage={() => goToPreviewPage()} file={file} setFile={(file: File | null) => setFile(file)} />);
     }
     else if (taskState == 2) {
-      return (<CreatePostForm toNextPage={(data: CreatedPost) => getDataFromForm(data)}
-        backPage={() => backButtonHandler()}/>);
+      return (<CreatePostForm postData={postData} document={document} toNextPage={(data: CreatedPost) => getDataFromForm(data)}
+        backPage={() => backButtonHandler()} />);
     }
     else if (taskState == 3 && file != null) {
-      return (<PreviewPost postData={postData} backPage={() => backButtonHandler()} file={file}/>);
+      return (<PreviewPost postData={postData} document={document} backPage={() => backButtonHandler()} file={file} />);
     }
   };
 
-  const goToPreviewPage = () =>{
+  const goToPreviewPage = async () => {
+    const formData = new FormData()
+    formData.append("file", file!)
+    const result = await axios.post(`${process.env.NEXT_PUBLIC_API_LINK}/file/ocr`, formData, {
+      headers: {
+        Authorization: 'Bearer ' + token?.accessToken
+      }
+    })
+    // const result = await axios.post(`${process.env.NEXT_PUBLIC_API_LINK}/auth/login`, loginPayload)
+    setPostData({
+      title: "",
+      description: "",
+      contact: "",
+      tag: [],
+      permission: "",
+      image: [],
+      titleOcr: "",
+      titleType: "1"
+    })
+    setDocument(result.data)
     setTaskState(2);
   }
   const getDataFromForm = (data: CreatedPost) => {
@@ -83,7 +111,7 @@ const CreatePost: NextPage = () => {
         <Flex className={styles.createPostHeaderBox}>
           <Stack className={styles.createPostHeaderText}>
             <Text color={useColorModeValue("white", "white")} fontSize="2rem" id="create-post-title">
-                Create Post
+              Create Post
             </Text>
             <Text color={useColorModeValue("white", "white")} fontSize="1.3rem">
               สร้างโพสต์ใหม่

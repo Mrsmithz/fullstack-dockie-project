@@ -1,15 +1,20 @@
-import mongoose from "mongoose"
+import mongoose, { Document, Schema} from "mongoose"
 import { Status } from "./Status.enum"
 
 
-export interface IPost {
+export interface IRating {
+    userId: Schema.Types.ObjectId,
+    rating: number
+}
+export interface IPost extends Document {
     title:string,
     description?:string,
     contact?:string,
-    tags?:string[],
+    tagId?:mongoose.Types.ObjectId[],
     status:Status,
-    owner?:mongoose.Types.ObjectId
+    authorId?:mongoose.Types.ObjectId
     file:mongoose.Types.ObjectId,
     images:mongoose.Types.ObjectId[],
-    document?:Object
+    document?:Object,
+    ratings: IRating[]
 }

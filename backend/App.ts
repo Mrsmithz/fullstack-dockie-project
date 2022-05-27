@@ -4,21 +4,22 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import PostRouter from './src/router/post.router'
 import FileRouter from './src/router/file.router'
+import AuthRouter from './src/router/auth.router'
+import schema from './src/graphql/index'
+import './src/auth-strategy/jwtStrategy'
+import isAuthenticated from './src/middlewares/isAuthenticated'
+import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core'
+import { ApolloServer } from 'apollo-server-express'
+import { createPrometheusExporterPlugin } from '@bmatei/apollo-prometheus-exporter'
 
 dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 
-// declare global {
-//     namespace Express {
-//       interface Request {
-//         document?: Object,
-//         documentFile?: File
-//       }
-//     }
-//   }
 
 
-export const ContextPath : String = '/api/v1';
-const app : Application = express()
+
+export const ContextPath : String = process.env.CONTEXT_PATH ?? '/api/v1';
+
+const app = express()
 
 app.use(morgan('dev'))
 app.use(cors())
@@ -31,14 +32,46 @@ app.use(express.json())
 //     next()
 // })
 
-app.use(`${ContextPath}/post`, PostRouter)
+app.use(`${ContextPath}/post`, isAuthenticated, PostRouter)
 
 app.use(`${ContextPath}/file`, FileRouter)
+
+app.use(`${ContextPath}/auth`, AuthRouter)
 
 app.get(`${ContextPath}/health`, (req : Request, res : Response, next : NextFunction) : Response => {
     return res.json({
         status:'UP'
     })
 })
+app.get(`/`, (req : Request, res : Response, next : NextFunction) : Response => {
+    return res.status(200).send({
+        status:'UP'
+    })
+})
 
+app.get(`${ContextPath}/me`, isAuthenticated, (req, res, next) => {
+    res.send(req.user)
+})
+app.use(`${ContextPath}/graphql`, isAuthenticated)
+
+
+const apolloServer = new ApolloServer({
+    schema,
+    introspection: true,
+    plugins:[
+        ApolloServerPluginLandingPageGraphQLPlayground(),
+        createPrometheusExporterPlugin({ app })
+    ],
+    context: ({ req }) => {
+        return {
+            user: req.user
+        }
+    }
+})
+apolloServer.start().then(()  => {
+    apolloServer.applyMiddleware({
+        app,
+        path: `${ContextPath}/graphql`
+    })
+})
 export { app }

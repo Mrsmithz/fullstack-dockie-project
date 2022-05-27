@@ -4,7 +4,7 @@ import { connectDB } from './src/utils/db'
 import { connectGridFS } from './src/utils/uploadsBucket'
 connectDB(process.env.MONGODB_URI).then(() => console.log('Connect MongoDB Success'))
 connectGridFS(process.env.MONGODB_URI).then(() => console.log('Connect GridFS Success'))
-const PORT = process.env.PORT || 8000
+const PORT = process.env.PORT ?? 8000
 
 const httpServer : http.Server = http.createServer(app)
 

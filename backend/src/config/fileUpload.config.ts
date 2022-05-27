@@ -3,3 +3,4 @@ export const MAX_IMAGES_COUNT = 3
 export const IMAGES_FIELD_NAME = 'images'
 export const FILE_FIELD_NAME = 'file'
 export const FILE_UPLOAD_DEST = 'uploads/'
+export const UPDATE_IMAGES_FIELD_NAME = 'updateImages'

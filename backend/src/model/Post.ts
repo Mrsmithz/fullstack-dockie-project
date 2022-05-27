@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose'
 import { composeMongoose } from 'graphql-compose-mongoose'
 import { schemaComposer } from 'graphql-compose'
 import { IPost } from '../types/post/Post.type'
-const PostSchema : Schema = new Schema({
+const PostSchema : Schema = new Schema<IPost>({
     title:{
         type: String,
         required:true

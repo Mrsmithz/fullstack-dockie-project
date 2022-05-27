@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
 import { composeMongoose } from 'graphql-compose-mongoose'
 import { IComment } from '../types/comment/comment.type'
-const CommentSchema = new Schema({
+const CommentSchema = new Schema<IComment>({
     comment:{
         type: String,
         required: true

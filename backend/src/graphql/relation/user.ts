@@ -3,7 +3,7 @@ import { UserTC } from "../../model/User";
 import { CommentTC } from '../../model/Comment'
 import { DownloadTC } from '../../model/Download'
 import { FollowTC } from '../../model/Follow'
-
+import { ViewTC } from '../../model/View'
 UserTC.addRelation(
     'posts',
     {
@@ -74,6 +74,24 @@ UserTC.addRelation(
             filter : (user) => {
                 return { followerId : user._id}
             }
+        }
+    }
+)
+
+UserTC.addRelation(
+    'recentViews',
+    {
+        resolver: () => ViewTC.mongooseResolvers.findMany(),
+        projection: { _id : true},
+        prepareArgs: {
+            lean: true,
+            filter: (user) => {
+                return {
+                    viewerId: user._id
+                }
+            },
+            limit:5,
+            sort:{ updatedAt : -1}
         }
     }
 )

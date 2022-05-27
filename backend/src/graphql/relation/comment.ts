@@ -7,7 +7,9 @@ CommentTC.addRelation(
         resolver: () => UserTC.mongooseResolvers.findOne(),
         projection: { authorId: true},
         prepareArgs:{
-            filter: (comment) => comment.authorId
+            filter: (comment) => {
+                return { _id: comment.authorId }
+            }
         }
     }
 )

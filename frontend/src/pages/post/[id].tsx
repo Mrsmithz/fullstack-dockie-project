@@ -12,7 +12,6 @@ import { Rating } from "../../types/Rating"
 import { useSession, getSession } from "next-auth/react"
 import { ME } from "../../graphql/me"
 
-
 interface Props {
     id: string,
 }

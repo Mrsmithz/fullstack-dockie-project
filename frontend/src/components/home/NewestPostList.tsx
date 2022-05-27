@@ -76,18 +76,20 @@ const NewestPostList = ({ posts }: Props) => {
         >
           <Grid templateColumns="repeat(12, 1fr)">
             <GridItem colSpan={3} display="flex" alignItems={"center"}>
-              <Flex justifyContent="center" alignItems="center">
+              <Flex justifyContent="center" alignItems="center" padding={3}>
                 <Image
                   borderRadius="full"
                   src={
                     process.env.NEXT_PUBLIC_API_LINK + "/file/" + item.images[0]
                   }
                   alt="Dan Abramov"
+                  width={"80%"}
+                  height={"80%"}
                 />
               </Flex>
             </GridItem>
-            <GridItem colStart={5}>
-              <Flex justifyContent={"center"}>
+            <GridItem colStart={5} display={"flex"} justifyContent={"center"} alignItems={"center"}>
+              <Flex justifyContent={"center"} alignItems={"center"}>
                 <Stack>
                   <Text textAlign={"left"} fontSize={fontNormal}>
                     Author :{" "}

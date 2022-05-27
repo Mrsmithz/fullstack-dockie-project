@@ -241,18 +241,28 @@ const CreatePostForm = ({ postData, document, toNextPage, backPage }: Props) => 
   }
 
   const nextButtonHandler = () => {
-    const createdPost: CreatedPost = {
-      title: title,
-      description: description,
-      contact: contact,
-      tag: tag,
-      permission: permission,
-      image: images,
-      titleOcr: titleOcr,
-      titleType: titleType,
+    if(images.length){
+      const createdPost: CreatedPost = {
+        title: title,
+        description: description,
+        contact: contact,
+        tag: tag,
+        permission: permission,
+        image: images,
+        titleOcr: titleOcr,
+        titleType: titleType,
+      }
+  
+      toNextPage(createdPost);
+    }else{
+      toast({
+        title: `Error`,
+        description: 'Please upload preview image',
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
     }
-
-    toNextPage(createdPost);
 
   }
 

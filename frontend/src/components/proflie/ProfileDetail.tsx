@@ -1,9 +1,13 @@
-import { Center, Flex, Grid, GridItem, Text, useColorModeValue, Image, Button, Box, useToast } from "@chakra-ui/react";
+import {
+    Center, Grid, GridItem, Text, useColorModeValue, Image, Button, Box, useToast, useDisclosure
+} from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link"
 import { Profile } from "../../types/Profile";
 import { Post } from "../../types/Post";
 import { useMutation, gql } from '@apollo/client'
+import ModalFollower from "./ModalFollower";
+import ModalFollowing from "./ModalFollowing"
 import axios from "axios"
 const size = { base: "100%", md: "80%", lg: "60%" };
 
@@ -36,9 +40,15 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
     const [unfollowMutation] = useMutation(UNFOLLOW_USER_MUTATION)
     const [followButton, setFollowButton] = useState(true)
     const [myProfile, setMyProfile] = useState(false)
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { 
+        isOpen: isOpenFollowing,
+        onOpen: onOpenFollowing,
+        onClose: onCloseFollowing
+    } = useDisclosure()
     const followUser = useCallback(async () => {
         setFollowButton(false)
-        await followMutation({variables: {followingId: profile._id}})
+        await followMutation({ variables: { followingId: profile._id } })
         toast({
             title: `Follow ${profile?.firstName}`,
             status: 'success',
@@ -49,7 +59,7 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
     }, [])
     const unFollowUser = useCallback(async () => {
         setFollowButton(true)
-        await unfollowMutation({variables: {followingId: profile._id}})
+        await unfollowMutation({ variables: { followingId: profile._id } })
         toast({
             title: `Unfollow ${profile?.firstName}`,
             status: 'error',
@@ -67,7 +77,7 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
         const checkFollowing = profile.followers.some(
             (follower) => follower.followerId == userId.data._id
         );
-        if(checkFollowing){
+        if (checkFollowing) {
             setFollowButton(false)
         }
     }, [])
@@ -91,7 +101,7 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
                                 src={profile?.image}
                                 alt="image"
                                 boxSize={{ base: 150, lg: 200, md: 400, sm: 400 }}
-                                borderRadius={100}
+                                borderRadius={200}
                             />
                         </Center>
 
@@ -101,13 +111,14 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
                             <Text fontSize={{ base: 30, lg: 40 }} > {profile?.firstName} {profile?.lastName}</Text>
                         </Center>
                         <Center>
-                            <Text fontSize={20}> {profile?.posts.length} Post {profile?.followings.length} Following {profile?.followers.length} Follower</Text>
+                            <Button onClick={() => onOpen()}>{profile?.followers.length} Follower</Button>
+                            <Button onClick={() => onOpenFollowing()} ml={10}>{profile?.followings.length} Following</Button>
                         </Center>
                         <Center mt={5}>
                             {followButton && myProfile == false && (
                                 <Button colorScheme="blue" variant="solid" onClick={() => followUser()}>+ Follow</Button>
                             )}
-                            {!followButton && myProfile == false &&(
+                            {!followButton && myProfile == false && (
                                 <Button colorScheme="red" variant="solid" onClick={() => unFollowUser()}>Un follow</Button>
                             )}
                         </Center>
@@ -121,7 +132,7 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
                 borderRadius={20}
                 alignSelf="center"
             >
-                <Text fontSize={{ base: 25, lg: 30 }}>Collections</Text>
+                <Text fontSize={{ base: 25, lg: 30 }}>Post ( {profile?.posts.length} )</Text>
                 <Grid templateColumns="repeat(12, 1fr)" gap={{ base: 3, lg: 5 }} mt={5}>
                     {profile?.posts.map((post: Post) => (
                         <GridItem colSpan={{ base: 6, lg: 3 }} key={post._id}>
@@ -137,8 +148,15 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
                             </Link>
                         </GridItem>
                     ))}
+                    {profile?.posts.length == 0 && (
+                        <GridItem colSpan={12}>
+                            <Center h={200}><Text fontSize={40}>No post.</Text></Center>
+                        </GridItem>
+                    )}
                 </Grid>
             </Box>
+            <ModalFollower isOpen={isOpen} onOpen={onOpen} onClose={onClose} followers={profile.followers}></ModalFollower>
+            <ModalFollowing isOpen={isOpenFollowing} onOpen={onOpenFollowing} onClose={onCloseFollowing} followings={profile.followings}></ModalFollowing>
         </>
     );
 };

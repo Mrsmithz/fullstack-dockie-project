@@ -13,7 +13,7 @@ import { Icon } from '@chakra-ui/react'
 import { MdDescription, MdEdit, MdVerified } from 'react-icons/md';
 import axios from 'axios'
 import styles from '../../styles/CreatePost.module.scss'
-import { useSession} from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { CreatedPost } from '../../types/CreatedPost'
 
 const tasks = [
@@ -42,8 +42,8 @@ const CreatePost: NextPage = () => {
     tag: [],
     permission: "",
     image: [],
-    titleOcr:"",
-    titleType:"1"
+    titleOcr: "",
+    titleType: "1"
   });
   const [file, setFile] = useState<File | null>(null)
   const [document, setDocument] = useState({
@@ -51,7 +51,7 @@ const CreatePost: NextPage = () => {
     text: "",
     title: []
   })
-  
+
 
   const renderComponent = () => {
     if (taskState == 1) {
@@ -75,6 +75,16 @@ const CreatePost: NextPage = () => {
       }
     })
     // const result = await axios.post(`${process.env.NEXT_PUBLIC_API_LINK}/auth/login`, loginPayload)
+    setPostData({
+      title: "",
+      description: "",
+      contact: "",
+      tag: [],
+      permission: "",
+      image: [],
+      titleOcr: "",
+      titleType: "1"
+    })
     setDocument(result.data)
     setTaskState(2);
   }

@@ -114,7 +114,7 @@ const Home: NextPage = () => {
   const { loading, error, data } = useQuery(GET_ALL_POSTS)
 
   const { data: token, status } = useSession()
-  // console.log(token, "c")
+  console.log(token, "c")
   // const [ session, loadingsss ] = useSession()
   // console.log(data, token, "x")
   // console.log(session, "dd")
@@ -179,20 +179,10 @@ const Home: NextPage = () => {
             <Center marginTop={4}>
               <Text as='h2' fontSize={'2xl'}>Dockie</Text>
             </Center>
-            {/* <Center marginTop={4}>
-              <Text as='h2' fontSize={'2xl'} isTruncated>Online Structural Validate-based System © v1.0 beta</Text>
-            </Center> */}
             <Center marginTop={8}>
               <Button colorScheme='green' variant='outline' size={'lg'} onClick={() => signIn('google')}>
                 Login with google
               </Button>
-              {/* <GoogleLogin
-                clientId="1078651650648-j2u0h98ugt94ogmetd0gjv4lplhn35kq.apps.googleusercontent.com"
-                buttonText="Login with google"
-                onSuccess={responseGoogle}
-                onFailure={responseGoogle}
-                cookiePolicy={'single_host_origin'}
-              /> */}
             </Center>
           </Center>
       }

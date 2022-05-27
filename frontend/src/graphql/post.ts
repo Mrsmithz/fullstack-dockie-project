@@ -12,12 +12,16 @@ export const GET_ALL_POSTS = gql`
   }
 `;
 
-export const GET_ALL_POST_FOR_FILTER = gql`
+export const GET_ALL_POST_FOR_FILTER_AUTHOR = gql`
   query {
     posts {
       _id
       title
       description
+      author {
+        firstName
+        lastName
+      }
       createdAt
       ratingAvg
       tags {

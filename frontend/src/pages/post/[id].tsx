@@ -3,13 +3,14 @@ import Head from 'next/head'
 import PostDetail from "../../components/post/PostDetail";
 import styles from '../../styles/CreatePost.module.scss'
 import { Stack } from "@chakra-ui/react";
-import { useEffect, useState, useCallback} from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Comment } from '../../types/Comment'
-import { gql, useQuery, useMutation} from "@apollo/client";
-import {MutationCreateCommentArgs} from "../../generated/graphql"
+import { gql, useQuery, useMutation } from "@apollo/client";
+import { MutationCreateCommentArgs } from "../../generated/graphql"
 import axios from "axios"
-import {Rating} from "../../types/Rating"
+import { Rating } from "../../types/Rating"
 import { useSession, getSession } from "next-auth/react"
+import { ME } from "../../graphql/me"
 
 const postData = [
     {
@@ -116,7 +117,6 @@ const postData = [
 
 interface Props {
     id: string,
-    session:any
 }
 
 const GET_POST_BY_ID = gql`
@@ -186,7 +186,7 @@ const DELETE_COMMENT = gql`
         },
     }
 `
-const PostDetailPage: NextPage<Props> = ({ id, session }) => {
+const PostDetailPage: NextPage<Props> = ({ id }) => {
     const [createCommentMutation] = useMutation(CREATE_COMMENT)
     const [createRatingMutation] = useMutation(CREATE_RATING)
     const [deleteCommentMutation] = useMutation(DELETE_COMMENT)
@@ -195,71 +195,65 @@ const PostDetailPage: NextPage<Props> = ({ id, session }) => {
     const [myRating, setMyRating] = useState(0)
     const [owner, setOwner] = useState(false)
 
-    const { loading, error, data, refetch} = useQuery(GET_POST_BY_ID, {
+    const { loading, error, data, refetch } = useQuery(GET_POST_BY_ID, {
         variables: { id }
     })
 
-    const getMyId = useCallback(async() =>{
-        const me = await axios.get(`${process.env.NEXT_PUBLIC_API_LINK}/me`, {headers:{
-            Authorization: `Bearer ${session?.accessToken}`
-        }})
-        if(me.data._id === data?.postById.authorId){
-            setOwner(true)
-        } 
-        setMyId(me.data._id)
-    },[session, data])
+    const { loading:meLoading, error:meError, data:meData, refetch:meRefetch } = useQuery(ME)
 
-    const getMyRating = useCallback(()=>{
-        const myRating = data?.postById.ratings.filter((r:Rating) => r.userId === myId)
+    const getMyId = useCallback(async () => {
+        // const me = await axios.get(`${process.env.NEXT_PUBLIC_API_LINK}/me`, {
+        //     headers: {
+        //         Authorization: `Bearer ${session?.accessToken}`
+        //     }
+        // })
+        if(meData){
+            if (meData._id === data?.postById.authorId) {
+                setOwner(true)
+            }
+            setMyId(meData._id)
+        }
+    }, [meData, data])
+
+    const getMyRating = useCallback(() => {
+        const myRating = data?.postById.ratings.filter((r: Rating) => r.userId === myId)
         setMyRating(myRating.length ? myRating[0].rating : 0)
     }, [data, myId])
 
-    useEffect(()=>{
+    useEffect(() => {
         getMyId()
-    },[session, getMyId])
+    }, [getMyId])
 
-    useEffect(()=>{
-        if(data){
+    useEffect(() => {
+        if (data) {
             getMyRating()
         }
     }, [data, getMyRating])
 
-    const handleComment = async(newComment:string) =>{
-        try{
-            const { data: createCommentData } =  await createCommentMutation({ variables: {comment:newComment, postId:id} })
+    const handleComment = async (newComment: string) => {
+        try {
+            const { data: createCommentData } = await createCommentMutation({ variables: { comment: newComment, postId: id } })
             refetch()
-        }catch(err){
+        } catch (err) {
             console.log(err)
         }
     }
 
-    const handleCreateRating = async(rating:number) =>{
-        try{
-            const { data: createRatingData } =  await createRatingMutation({ variables: {rating:rating, postId:id} })
+    const handleCreateRating = async (rating: number) => {
+        try {
+            const { data: createRatingData } = await createRatingMutation({ variables: { rating: rating, postId: id } })
             refetch()
-        }catch(err){
+        } catch (err) {
             console.log(err)
         }
     }
 
-    const addComment = (newComment: string) => {
-        const newCommentData = {
-            author: "Name Lastname",
-            createdDate: new Date(),
-            comment: newComment,
-        }
-        postData[1].comment.push(newCommentData);
-    }
 
-    const ratePost = (newRating : number) => {
-        postData[1].rating = newRating
-    }
-
-    const deleteComment = async(id: string) => {
-        try{
-            const { data: deleteCommentData } =  await deleteCommentMutation({ variables: {commentId:id} })
+    const deleteComment = async (id: string) => {
+        try {
+            const { data: deleteCommentData } = await deleteCommentMutation({ variables: { commentId: id } })
             refetch()
-        }catch(err){
+        } catch (err) {
             console.log(err)
         }
     }
@@ -285,13 +279,11 @@ const PostDetailPage: NextPage<Props> = ({ id, session }) => {
         </div>
     )
 }
-export const getServerSideProps = async(context: any) => {
+export const getServerSideProps = async (context: any) => {
     const { id } = context.query;
-    const session = await getSession(context)
     return {
         props: {
             id,
-            session
         },
     };
 };

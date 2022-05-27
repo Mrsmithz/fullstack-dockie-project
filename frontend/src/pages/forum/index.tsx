@@ -10,14 +10,16 @@ import {
   Grid,
   GridItem,
 } from "@chakra-ui/react";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { GET_ALL_POST_WITH_AUTHOR } from "../../graphql/post";
 import styles from "../../styles/Forum.module.scss";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { VIEW_POST } from "../../graphql/me";
 const Forum: NextPage = () => {
     const router = useRouter()
   const { loading, error, data } = useQuery(GET_ALL_POST_WITH_AUTHOR);
+  const [view, {data: dataView, loading: loadingView, error: errorView}] = useMutation(VIEW_POST)
   const [current, setCurrent] = useState<number>(1);
   const [all, setAll] = useState<any[]>([])
   const [currentList, setCurrentList] = useState<any[]>([])
@@ -49,6 +51,7 @@ const Forum: NextPage = () => {
     return <div>Loading</div>;
   }
   const goNext = (id: any) => {
+    view({ variables: { postId: id } });
     router.push(`/post/${id}`)
 }
   return (

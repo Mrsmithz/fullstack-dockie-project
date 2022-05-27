@@ -15,7 +15,7 @@ import { BsPeopleFill } from 'react-icons/bs'
 import { MdFeaturedPlayList, MdLiveHelp } from 'react-icons/md'
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { useSession, getSession, signIn, signOut } from "next-auth/react"
-import { GET_ALL_POSTS, GET_ALL_POST_FOR_FILTER } from "../graphql/post"
+import { GET_ALL_POSTS, GET_ALL_POST_FOR_FILTER_AUTHOR } from "../graphql/post"
 import { ME } from '../graphql/me'
 
 const historyPostData = [
@@ -44,14 +44,17 @@ const historyPostData = [
 const Home: NextPage = () => {
   const [filter, setFilter] = useState<any[]>([])
   const { loading, error, data } = useQuery(GET_ALL_POSTS)
-  const { loading: loadingFilter, error: errorFilter, data: dataFilter} = useQuery(GET_ALL_POST_FOR_FILTER)
-  const { loading: loadingMe, error: errorMe, data: dataMe} = useQuery(ME)
+  const { loading: loadingFilter, error: errorFilter, data: dataFilter} = useQuery(GET_ALL_POST_FOR_FILTER_AUTHOR)
+  const { loading: loadingMe, error: errorMe, data: dataMe, refetch} = useQuery(ME)
   const { data: token, status } = useSession()
-  
+
   const responseGoogle = (response: any) => {
     console.log(response);
   }
-
+  useEffect(() => {
+    console.log("Refetch")
+    refetch()
+  }, [])
   if(loading || loadingFilter){
     return <p>Loading...</p>
   }
@@ -59,8 +62,8 @@ const Home: NextPage = () => {
   if (status === "loading") {
     return <p>Loading...</p>
   }
-  if (dataMe) {
-    console.log(dataMe)
+  if (dataFilter) {
+    console.log(dataFilter)
   }
   return (
     <Box className={styles.container}>
@@ -92,7 +95,7 @@ const Home: NextPage = () => {
 
                 </GridItem>
 
-                {/* History Grid
+                {/* History Grid */}
                 <GridItem colSpan={{ base: 12, md: 12, lg: 5 }}>
                   <h1 className={styles.homeHeader}>History Post</h1>
                   {
@@ -102,11 +105,10 @@ const Home: NextPage = () => {
                   }
                   {
                     !dataMe.me.recentView && (
-                      <HistoryPostList posts={dataMe.me.recentView} />
-                      
+                      <HistoryPostList posts={dataMe?.me.recentViews} />
                     )
                   }
-                </GridItem> */}
+                </GridItem>
 
               </Grid>
               <Fab></Fab>

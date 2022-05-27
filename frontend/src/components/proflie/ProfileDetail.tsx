@@ -5,16 +5,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link"
 import { Profile } from "../../types/Profile";
 import { Post } from "../../types/Post";
-import { useMutation, gql } from '@apollo/client'
+import { useMutation, gql, useQuery } from '@apollo/client'
 import ModalFollower from "./ModalFollower";
 import ModalFollowing from "./ModalFollowing"
-import axios from "axios"
 const size = { base: "100%", md: "80%", lg: "60%" };
 
 type Props = {
     profile: Profile,
     refetch: Function,
-    session: any
 }
 
 const FOLLOW_USER_MUTATION = gql`
@@ -32,67 +30,77 @@ mutation($followingId: MongoID!){
 }
 `
 
-const ProfileDetail = ({ profile, refetch, session }: Props) => {
+const ME_QUERY = gql`
+query{
+    me{
+      _id
+    }
+  }
+`
+
+const ProfileDetail = ({ profile, refetch }: Props) => {
     const toast = useToast()
     const backgroundProfileDetailColor = useColorModeValue("blue.100", "gray.500")
     const backgroundCollectoins = useColorModeValue("blue.300", "gray.700")
     const [followMutation] = useMutation(FOLLOW_USER_MUTATION)
     const [unfollowMutation] = useMutation(UNFOLLOW_USER_MUTATION)
+    const { loading, error, data } = useQuery(ME_QUERY)
     const [followButton, setFollowButton] = useState(true)
-    const [renderFollowButton, setRenderFollowButton] = useState(false)
     const [myProfile, setMyProfile] = useState(false)
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const { 
+    const {
         isOpen: isOpenFollowing,
         onOpen: onOpenFollowing,
         onClose: onCloseFollowing
     } = useDisclosure()
-    const followUser = useCallback(async () => {
+    const followUser = async () => {
         setFollowButton(false)
-        await followMutation({ variables: { followingId: profile?._id } })
+        await followMutation({ variables: { followingId: profile._id } })
         toast({
-            title: `Follow ${profile?.firstName}`,
+            title: `Follow ${profile.firstName}`,
             status: 'success',
             duration: 4000,
             isClosable: true,
         })
         refetch()
-    }, [])
-    const unFollowUser = useCallback(async () => {
+    }
+    const unFollowUser = async () => {
         setFollowButton(true)
-        await unfollowMutation({ variables: { followingId: profile?._id } })
+        await unfollowMutation({ variables: { followingId: profile._id } })
         toast({
-            title: `Unfollow ${profile?.firstName}`,
+            title: `Unfollow ${profile.firstName}`,
             status: 'error',
             duration: 4000,
             isClosable: true,
         })
         refetch()
-    }, [])
+    }
 
-    const checkProfile = useCallback(async () => {
-        const userId = await axios.get(`${process.env.NEXT_PUBLIC_API_LINK}/me`, {headers:{
-            Authorization: `Bearer ${session?.accessToken}`
-        }})
-        if (profile?._id == userId.data._id) {
-            setMyProfile(true)
-        } else {
-            setMyProfile(false)
-        }
-        const checkFollowing = profile?.followers.some(
-            (follower) => follower.followerId == userId.data._id
+    const checkFollowing = (userId: string) => {
+        const checkFollowing = profile.followers.some(
+            (follower) => follower.followerId == userId
         );
         if (checkFollowing) {
             setFollowButton(false)
         } else {
             setFollowButton(true)
         }
-        setRenderFollowButton(true)
-    }, [profile, setFollowButton, setRenderFollowButton, setMyProfile])
+    }
+
+    const checkProfile = () => {
+        const userId = data?.me._id
+        if (profile._id === userId) {
+            setMyProfile(true)
+        } else {
+            setMyProfile(false)
+        }
+        checkFollowing(userId)
+    }
 
     useEffect(() => {
+        refetch()
         checkProfile()
-    }, [checkProfile])
+    }, [checkProfile, refetch])
     return (
         <>
             <Center
@@ -124,10 +132,10 @@ const ProfileDetail = ({ profile, refetch, session }: Props) => {
                             <Button onClick={() => onOpenFollowing()} ml={10}>{profile?.followings.length} Following</Button>
                         </Center>
                         <Center mt={5}>
-                            {renderFollowButton && followButton && myProfile == false && (
+                            {followButton && myProfile == false && (
                                 <Button colorScheme="blue" variant="solid" onClick={followUser}>+ Follow</Button>
                             )}
-                            {renderFollowButton && !followButton && myProfile == false && (
+                            {!followButton && myProfile == false && (
                                 <Button colorScheme="red" variant="solid" onClick={unFollowUser}>Un follow</Button>
                             )}
                         </Center>

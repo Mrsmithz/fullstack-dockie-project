@@ -16,6 +16,9 @@ import {
     Input,
     useDisclosure,
     IconButton,
+    Avatar,
+    HStack,
+    Link
 } from "@chakra-ui/react";
 import RatingModal from './RatingModal'
 import DeleteCommentModal from './DeleteCommentModal'
@@ -23,12 +26,17 @@ import { DeleteIcon } from '@chakra-ui/icons'
 
 import { Comment } from "../../types/Comment"
 import { Post } from "../../types/Post"
-
+import { Tag as TagType } from '../../types/Tag'
+import { useSession } from "next-auth/react"
 import {
     checkComment
 } from '../../utils/feedbackPost';
+import axios from "axios"
+import { useRouter } from 'next/router';
 
-import Link from "next/link"
+import ImageModal from "../modal/ImageModal"
+
+// import Link from "next/link"
 
 const size = { base: "100%", md: "80%", lg: "60%" };
 
@@ -37,26 +45,39 @@ type Props = {
     addComment: Function
     ratePost: Function
     deleteComment: Function,
-    post: Post
+    post: Post,
+    myRating: number,
+    owner: boolean,
+    myId: string
 }
 
-const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Props) => {
-    const [newComment, setNewComment] = useState("");
-    const [rating, setRating] = useState(postData.ratings);
-    const [newRating, setNewRating] = useState(0);
+const PostDetail = ({ postData, addComment, ratePost, deleteComment, post, myRating, owner, myId }: Props) => {
+    console.log(post)
+    const { data: token, status } = useSession()
 
-    const [deleteCommentTemp, setDeleteCommentTemp] = useState({});
+    const router = useRouter()
+
+    const [newComment, setNewComment] = useState("");
+    const [rating, setRating] = useState(myRating);
+    const [newRating, setNewRating] = useState(0);
+    const [deleteCommentId, setDeleteCommentId] = useState("");
+
+    const [modalImage, setModalImage] = useState("")
+    const [openModal, setOpenModal] = useState<boolean>(false)
+
+    const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false)
 
     const [updateKey, setUpdateKey] = useState(0);
 
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const {
-        isOpen: isOpenDeleteModal,
-        onOpen: onOpenDeleteModal,
-        onClose: onCloseDeleteModal
-    } = useDisclosure()
+    // const {
+    //     isOpen: isOpenDeleteModal,
+    //     onOpen: onOpenDeleteModal,
+    //     onClose: onCloseDeleteModal
+    // } = useDisclosure()
 
-    const renderAvgRating = (rating: number) => {
+
+    const renderAvgRating = (rating?: any) => {
         var starList: any[] = [];
         for (let i = 1; i <= 5; i++) {
             if (i <= rating) {
@@ -90,8 +111,13 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
 
     const zeroPad = (num: number, places: number) => String(num).padStart(places, '0')
 
-    const formatCommentDate = (date: Date) => {
-        return date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate() + " " + zeroPad(date.getHours(), 2) + ":" + zeroPad(date.getMinutes(), 2);
+    // const formatCommentDate = (date: Date) => {
+    //     return date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate() + " " + zeroPad(date.getHours(), 2) + ":" + zeroPad(date.getMinutes(), 2);
+    // }
+
+    const handleModal = (img: string) => {
+        setModalImage(img)
+        setOpenModal(true)
     }
 
     const addNewComment = () => {
@@ -103,28 +129,27 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
     }
 
     const handleRating = (newRating: number) => {
-        if (newRating !== rating) {
+        if (newRating !== myRating) {
             setNewRating(newRating)
             onOpen()
         }
     }
 
     const handleRatingModal = () => {
-        setRating(newRating)
         ratePost(newRating)
+        setRating(newRating)
         onClose()
         setUpdateKey(updateKey + 1)
     }
 
-    const handleDeleteButton = (comment: Comment) => {
-        setDeleteCommentTemp(comment)
-        onOpenDeleteModal()
+    const handleDeleteButton = (id: string) => {
+        setDeleteCommentId(id)
+        setOpenDeleteModal(true)
     }
 
     const handleDeleteModal = () => {
-        deleteComment(deleteCommentTemp)
-        onCloseDeleteModal()
-        setUpdateKey(updateKey + 1)
+        deleteComment(deleteCommentId)
+        setOpenDeleteModal(false)
     }
     const backgroundDetailPostColor = useColorModeValue("blue.100", "gray.500")
     const commentBoxColor = useColorModeValue("blue.200", "gray.400");
@@ -147,12 +172,12 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
                     <Grid templateColumns="repeat(12, 1fr)">
                         <GridItem colSpan={{ base: 12, lg: 3, md: 12, sm: 12 }}>
                             <Flex justify="center" align="center">
-                                <Link href={`/profile/${post?.authorId}`} passHref>
-                                    <Image
+                                <Link href={`/profile/${post?.authorId}`}>
+                                    <Avatar
                                         src={
-                                            postData.imgUrl
+                                            post?.author.image
                                         }
-                                        alt="image"
+                                        cursor={'pointer'}
                                         boxSize={{ base: 200, lg: 200, md: 400, sm: 400 }}
                                     />
                                 </Link>
@@ -188,7 +213,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
                                     h={200}
                                     overflowY="auto"
                                 >
-                                    <Text fontSize={15}> {post?.document.text} </Text>
+                                    <Text fontSize={15}> {post?.description} </Text>
                                 </Box>
                                 <Grid templateColumns="repeat(12, 1fr)">
                                     <GridItem
@@ -198,20 +223,22 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
                                         <Text>Tag</Text>
                                     </GridItem>
                                     <GridItem colSpan={10}>
-                                        {postData.tag.map((item: any, index: number) => (
+                                        {post?.tags.map((item: TagType, index: number) => (
                                             <Tag ml={2} colorScheme="teal" key={`tag-${index}`}>
-                                                {item}
+                                                {item.name}
                                             </Tag>
                                         ))}
                                     </GridItem>
                                 </Grid>
                                 <Text fontSize={16} marginTop="0.5rem" paddingLeft="0.5rem">Permission : {post?.status} </Text>
-                                <Box marginTop="0.25rem" paddingLeft="0.75rem">
-                                    <Text>Average Rating</Text>
-                                    <Stack direction="row" pr={10}>
-                                        {renderAvgRating(postData.avgRating)}
-                                    </Stack>
-                                    <Text paddingLeft="0.6rem">From ... User</Text>
+                                <Box marginTop="0.25rem" paddingLeft="0.5rem">
+                                    <HStack>
+                                        <Text>Average Rating :</Text>
+                                        <Stack direction="row" pr={10}>
+                                            {renderAvgRating(post?.ratingAvg)}
+                                        </Stack>
+                                        {/* <Text paddingLeft="0.6rem">From ... User</Text> */}
+                                    </HStack>
                                 </Box>
                             </Box>
                             <Center mt={5}>
@@ -228,7 +255,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
                             mt={{ base: 10, lg: 5 }}
                         >
                             <Center h={"100%"}>
-                                <Button colorScheme="blue" variant="solid">
+                                <Button colorScheme="blue" variant="solid" onClick={() => router.push(`${process.env.NEXT_PUBLIC_API_LINK}/file/${post.file}`)}>
                                     Download File
                                 </Button>
                             </Center>
@@ -236,11 +263,33 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
                         <GridItem colSpan={1}></GridItem>
                         <GridItem colSpan={{ base: 12, lg: 8, md: 12, sm: 12 }} mt={5}>
                             <Text fontSize={20}>Preview</Text>
-                            <SimpleGrid columns={3} spacing={4}>
+                            <SimpleGrid columns={3} spacing={4} mt={2}>
+                                {
+                                    post && post?.images.map((image: string) => {
+                                        return (
+                                            <Box bg={"gray.300"} h={{ base: 150, lg: 220 }} key={image}>
+                                                <Image
+                                                    src={`${process.env.NEXT_PUBLIC_API_LINK}/file/${image}`}
+                                                    h={'100%'}
+                                                    w={'100%'}
+                                                    transitionDuration={'0.2s'}
+                                                    _hover={{
+                                                        transform: 'scale(1.02)',
+                                                        transitionDuration: '0.2s'
+                                                    }}
+                                                    _active={{
+                                                        transform: 'scale(0.98)',
+                                                        transitionDuration: '0.2s'
+                                                    }}
+                                                    cursor={'pointer'}
+                                                    alt={"preview image"}
+                                                    onClick={() => handleModal(`${process.env.NEXT_PUBLIC_API_LINK}/file/${image}`)}
+                                                />
+                                            </Box>
+                                        )
+                                    })
+                                }
 
-                                <Box bg={"gray.300"} h={{ base: 150, lg: 220 }}></Box>
-                                <Box bg={"gray.300"} h={{ base: 150, lg: 220 }}></Box>
-                                <Box bg={"gray.300"} h={{ base: 150, lg: 220 }}></Box>
                             </SimpleGrid>
                         </GridItem>
 
@@ -251,7 +300,7 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
 
                         {/* User Comment */}
                         <GridItem colSpan={12} m={3} pl={{ base: 1, lg: 5 }}>
-                            {postData.comment.map((item: Comment, index: number) => (
+                            {post?.comments.map((item: Comment, index: number) => (
                                 <Grid
                                     templateColumns="repeat(12, 1fr)"
                                     bg={commentBoxColor}
@@ -261,32 +310,55 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
                                     position="relative"
                                     key={`comment-${index}`}
                                 >
-                                    <GridItem colSpan={{ base: 12, lg: 2, md: 3, sm: 12 }} >
+                                    <GridItem colSpan={{ base: 12, lg: 2, md: 3, sm: 12 }} alignSelf={'center'}>
                                         <Center>
-                                            <Image
-                                                src={
-                                                    postData.imgUrl
-                                                }
-                                                alt="image"
-                                                boxSize={20}
-                                            />
+                                            <Link
+                                                href={`/profile/${item?.authorId}`}
+                                                _focus={{}}
+                                            >
+                                                <Avatar
+                                                    src={
+                                                        item.author.image
+                                                    }
+                                                    boxSize={10}
+                                                />
+                                            </Link>
                                         </Center>
                                     </GridItem>
-                                    <GridItem colSpan={{ base: 12, lg: 10, md: 9, sm: 12 }} mt={5} textAlign={{ base: "center", md: "start" }}>
-                                        <Text>{item.author} {formatCommentDate(item.createdDate)} </Text>
+                                    <GridItem colSpan={{ base: 12, lg: 10, md: 9, sm: 12 }} textAlign={{ base: "center", md: "start" }}>
+                                        <HStack>
+                                            <Link href={`/profile/${item?.authorId}`}>{`${item.author.firstName} ${item.author.lastName}`}</Link>
+                                            <Text>
+                                                {item.createdAt}
+                                            </Text>
+                                        </HStack>
                                         <Text>{item.comment}</Text>
                                     </GridItem>
-                                    <IconButton
-                                        colorScheme='red'
-                                        aria-label='Delete comment'
-                                        size="sm"
-                                        width={8}
-                                        position="absolute"
-                                        right="0.5rem"
-                                        top="0.5rem"
-                                        icon={<DeleteIcon />}
-                                        onClick={() => handleDeleteButton(item)}
-                                    />
+                                    {owner ?
+                                        <IconButton
+                                            colorScheme='red'
+                                            aria-label='Delete comment'
+                                            size="sm"
+                                            width={8}
+                                            position="absolute"
+                                            right="0.5rem"
+                                            top="0.5rem"
+                                            icon={<DeleteIcon />}
+                                            onClick={() => handleDeleteButton(item._id)}
+                                        />
+                                        : item?.authorId === myId &&
+                                        <IconButton
+                                            colorScheme='red'
+                                            aria-label='Delete comment'
+                                            size="sm"
+                                            width={8}
+                                            position="absolute"
+                                            right="0.5rem"
+                                            top="0.5rem"
+                                            icon={<DeleteIcon />}
+                                            onClick={() => handleDeleteButton(item._id)}
+                                        />
+                                    }
                                 </Grid>
                             ))}
                         </GridItem>
@@ -322,10 +394,12 @@ const PostDetail = ({ postData, addComment, ratePost, deleteComment, post }: Pro
             />
 
             <DeleteCommentModal
-                isOpen={isOpenDeleteModal}
-                onClose={() => onCloseDeleteModal}
+                isOpen={openDeleteModal}
+                onClose={() => setOpenDeleteModal(false)}
                 handleDeleteModal={() => handleDeleteModal()}
             />
+
+            <ImageModal imageSrc={modalImage} isOpen={openModal} setOpen={(value: boolean) => setOpenModal(value)}></ImageModal>
         </>
     );
 };

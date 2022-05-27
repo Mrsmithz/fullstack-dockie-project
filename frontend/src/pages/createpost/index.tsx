@@ -13,7 +13,7 @@ import { Icon } from '@chakra-ui/react'
 import { MdDescription, MdEdit, MdVerified } from 'react-icons/md';
 import axios from 'axios'
 import styles from '../../styles/CreatePost.module.scss'
-
+import { useSession } from "next-auth/react"
 import { CreatedPost } from '../../types/CreatedPost'
 
 const tasks = [
@@ -33,6 +33,7 @@ const tasks = [
 
 const CreatePost: NextPage = () => {
 
+  const { data: token, status } = useSession()
   const [taskState, setTaskState] = useState(1);
   const [postData, setPostData] = useState<CreatedPost>({
     title: "",
@@ -41,8 +42,8 @@ const CreatePost: NextPage = () => {
     tag: [],
     permission: "",
     image: [],
-    titleOcr:"",
-    titleType:"1"
+    titleOcr: "",
+    titleType: "1"
   });
   const [file, setFile] = useState<File | null>(null)
   const [document, setDocument] = useState({
@@ -50,6 +51,7 @@ const CreatePost: NextPage = () => {
     text: "",
     title: []
   })
+
 
   const renderComponent = () => {
     if (taskState == 1) {
@@ -65,13 +67,24 @@ const CreatePost: NextPage = () => {
   };
 
   const goToPreviewPage = async () => {
-    console.log(file)
     const formData = new FormData()
     formData.append("file", file!)
-    axios.defaults.headers.common["Authorization"] = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOGI4YjE0MWZhMTYxNzE2N2QzODk5OSIsImlhdCI6MTY1MzQ2MjY4MywiZXhwIjoxNjU0MDY3NDgzfQ.lzAsjeaxXf_r3DcCfSFPsciUe2pYwB0Bxhr-D5Zm9h8`
-    const result = await axios.post(`${process.env.NEXT_PUBLIC_API_LINK}/file/ocr`, formData)
+    const result = await axios.post(`${process.env.NEXT_PUBLIC_API_LINK}/file/ocr`, formData, {
+      headers: {
+        Authorization: 'Bearer ' + token?.accessToken
+      }
+    })
     // const result = await axios.post(`${process.env.NEXT_PUBLIC_API_LINK}/auth/login`, loginPayload)
-    console.log(result.data, "X")
+    setPostData({
+      title: "",
+      description: "",
+      contact: "",
+      tag: [],
+      permission: "",
+      image: [],
+      titleOcr: "",
+      titleType: "1"
+    })
     setDocument(result.data)
     setTaskState(2);
   }

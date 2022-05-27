@@ -7,6 +7,41 @@ export const GET_ALL_POSTS = gql`
       title
       document
       status
+      ratingAvg
     }
   }
 `;
+
+export const GET_ALL_POST_FOR_FILTER = gql`
+  query {
+    posts {
+      _id
+      title
+      description
+      createdAt
+      ratingAvg
+      tags {
+        name
+      }
+    }
+  }
+`
+
+export const GET_ALL_POST_WITH_AUTHOR = gql`
+  query {
+    posts {
+      _id
+      title
+      tags {
+        name
+      }
+      author {
+        firstName
+        lastName
+      }
+      createdAt
+      ratingAvg
+      images
+    }
+  }
+`

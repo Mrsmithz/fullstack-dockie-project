@@ -11,7 +11,7 @@ UserTC.addRelation(
         projection: { _id : true },
         prepareArgs: {
             filter : (user) => {
-                return { userId : user._id}
+                return { authorId : user._id}
             }
         }
     }

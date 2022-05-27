@@ -1,5 +1,6 @@
-import { CommentTC } from "../../model/Comment"
-import { UserTC } from "../../model/User"
+import { CommentTC } from "../../model/Comment";
+import { UserTC } from "../../model/User";
+
 
 CommentTC.addRelation(
     'author',

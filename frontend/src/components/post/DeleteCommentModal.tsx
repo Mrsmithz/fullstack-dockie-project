@@ -17,7 +17,7 @@ type Props = {
     handleDeleteModal: Function
 }
 
-const RatingModal = ({ isOpen, onClose, handleDeleteModal }: Props) => {
+const DeleteCommentModal = ({ isOpen, onClose, handleDeleteModal }: Props) => {
 
     return (
         <Modal isOpen={isOpen} onClose={() => onClose()}>
@@ -40,4 +40,4 @@ const RatingModal = ({ isOpen, onClose, handleDeleteModal }: Props) => {
     );
 };
 
-export default RatingModal;
+export default DeleteCommentModal;

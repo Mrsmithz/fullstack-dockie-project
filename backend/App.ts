@@ -54,6 +54,7 @@ app.get(`${ContextPath}/me`, isAuthenticated, (req, res, next) => {
 })
 app.use(`${ContextPath}/graphql`, isAuthenticated)
 
+
 const apolloServer = new ApolloServer({
     schema,
     introspection: true,

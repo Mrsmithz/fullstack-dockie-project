@@ -23,8 +23,12 @@ import { CreatedPost } from '../../types/CreatedPost'
 
 import { AddIcon, CloseIcon } from '@chakra-ui/icons'
 import { MdImageSearch } from 'react-icons/md';
+import { gql, useQuery, useMutation } from "@apollo/client";
 
 import styles from '../../styles/CreatePost.module.scss'
+
+import { Tag } from "../../types/Tag"
+
 
 import {
   getTitleValidateAlertMessage,
@@ -35,7 +39,7 @@ import {
 } from '../../utils/formValidation';
 
 type Props = {
-  postData:CreatedPost
+  postData: CreatedPost
   document: {
     fileId: string,
     text: string,
@@ -52,7 +56,18 @@ const titleOcrWidth = { base: "100%" };
 const dropzoneWidth = { base: "9rem", md: "8rem", lg: "9rem", xl: '9rem' };
 const dropzoneHeight = { base: "13rem", md: "12rem", lg: "13rem", xl: '13rem' };
 
+const GET_TAGS_LIST = gql`
+query Tag{
+  tags{
+    name
+    _id
+}
+}
+`
+
 const CreatePostForm = ({ postData, document, toNextPage, backPage }: Props) => {
+
+  const { loading, error, data, refetch } = useQuery(GET_TAGS_LIST)
 
   const inputRef = React.createRef<HTMLInputElement>();
 
@@ -69,7 +84,7 @@ const CreatePostForm = ({ postData, document, toNextPage, backPage }: Props) => 
   const [contact, setContact] = useState(postData.contact);
   const handleContactChange = (e: React.ChangeEvent<HTMLInputElement>) => setContact(e.target.value);
 
-  const [tag, setTag] = useState<string[]>(postData.tag);
+  const [tag, setTag] = useState<Tag[]>(postData.tag);
   const [tagInput, setTagInput] = useState("");
   const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setTagInput(e.target.value);
 
@@ -79,7 +94,11 @@ const CreatePostForm = ({ postData, document, toNextPage, backPage }: Props) => 
   const [titleOcr, setTitleOcr] = useState(postData.titleOcr ? postData.titleOcr : document.title[0]);
   const handleOcrTitleChange = (e: React.ChangeEvent<HTMLSelectElement>) => setTitleOcr(e.target.value);
 
+  const [tagsList, setTagsList] = useState(loading ? [] : data.tags)
+
   const [images, setImages] = useState<File[]>(postData.image);
+
+  const [selectTag, setSelectTag] = useState(tagsList.length ?? tagsList[0].name)
 
   const [isValidatedTitle, setValidatedTitle] = useState<boolean>(false);
   const [validationMessage, setValidationMessage] = useState<string>();
@@ -88,6 +107,16 @@ const CreatePostForm = ({ postData, document, toNextPage, backPage }: Props) => 
   const [validationTagMessage, setValidationTagMessage] = useState<string>();
 
   const [isError, setError] = useState<boolean>(true);
+
+
+  useEffect(() => {
+    if (data) {
+      setTagsList(data.tags);
+      if(!selectTag){
+        setSelectTag(data.tags[0].name)
+      }
+    }
+  }, [data, selectTag])
 
   const toast = useToast()
 
@@ -135,27 +164,32 @@ const CreatePostForm = ({ postData, document, toNextPage, backPage }: Props) => 
   }, [tagInput])
 
   const addTag = () => {
-    if (!isValidatedTagInput) {
-      return;
-    }
     if (tag.length < 5) {
+      let filter = tagsList.filter((t:Tag)=>t.name===selectTag)
       var newTag = [...tag];
-      newTag.push(tagInput);
-      setTagInput("");
-      setTag(newTag);
-      onClose();
+      if(!newTag.includes(filter[0])){
+        newTag.push(filter[0])
+        setTag(newTag);
+        onClose();
+      }else{
+        toast({
+          title: `Add tag error`,
+          description: 'duplicate tag',
+          status: 'error',
+          duration: 4000,
+          isClosable: true,
+        })
+      }
     }
   }
 
   const deleteTag = (e: React.BaseSyntheticEvent) => {
-    console.log(e)
     var newTag = [...tag];
     newTag.splice(tag.indexOf(e.target.innerText), 1);
     setTag(newTag);
   }
 
   const deleteImage = (index: number) => {
-    console.log(index)
     var newImageList = [...images];
     newImageList.splice(index, 1);
     setImages(newImageList);
@@ -301,18 +335,23 @@ const CreatePostForm = ({ postData, document, toNextPage, backPage }: Props) => 
 
           <Flex flexWrap="wrap" alignItems="center" marginTop="0.5rem">
 
-            {tag.map((item: string, index: number) => (
-              <Flex justify="center" align="center" key={`newest-tag-${index}`}
-                className={styles.tagBox}
-                color={'black'}
-                cursor="pointer"
-                onClick={(e) => deleteTag(e)}>
-                <span>{item}</span>
-              </Flex>
-            ))}
+            {tag?.map((item: Tag, index: number) => {
+              return (
+                <Flex justify="center" align="center" key={`newest-tag-${index}`}
+                  className={styles.tagBox}
+                  color={'black'}
+                  cursor="pointer"
+                  onClick={(e) => deleteTag(e)}>
+                  <span>{item.name}</span>
+                </Flex>
+              )
+            })}
 
             {tag.length < 5 ? (
-              <AddIcon marginLeft="0.8rem" cursor="pointer" onClick={onOpen} />
+              <AddIcon marginLeft="0.8rem" cursor="pointer" onClick={()=>{
+                setSelectTag(tagsList[0].name)
+                onOpen()
+              }} />
             ) : null}
 
           </Flex>
@@ -364,18 +403,17 @@ const CreatePostForm = ({ postData, document, toNextPage, backPage }: Props) => 
           <ModalHeader></ModalHeader>
           <ModalCloseButton onClick={onClose} />
           <ModalBody paddingTop="1rem">
-            <Input
-              id='tagInput'
-              type='text'
-              value={tagInput}
-              size="lg"
-              backgroundColor="gray.300"
-              color="black"
-              onChange={handleTagInputChange}
-            />
-            {!isValidatedTagInput && (
-              <Text style={{ color: "red" }}>{validationTagMessage}</Text>
-            )}
+            <Select
+              onChange={(e) => setSelectTag(e.target.value)}
+            >
+              {
+                tagsList.map((tag: Tag) => {
+                  return (
+                    <option value={tag.name} key={tag.name}>{tag.name}</option>
+                  )
+                })
+              }
+            </Select>
           </ModalBody>
 
           <ModalFooter>

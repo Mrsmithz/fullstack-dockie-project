@@ -40,6 +40,13 @@ const headerMargin = { base: 0, md: 0, lg: 6, xl: 8 };
 
 const RecommendedCarousel: NextPage<{ data: any }> = ({ data }) => {
     const swiperRef = useRef(null) as any
+    const [recommendPost, setRecommendPost] = useState<any[]>([])
+    useEffect(() => {
+        // console.log(posts)
+        let recommendedPost = [...data]
+        let filter = recommendedPost.filter((item) => item.ratingAvg >= 4 )
+        setRecommendPost(filter)
+      }, [])
     return (
         <Box w={'100%'} mb={10}>
             <Text fontSize={'1.8rem'} color={'snow'} ml={headerMargin}>Recommended</Text>
@@ -88,17 +95,28 @@ const RecommendedCarousel: NextPage<{ data: any }> = ({ data }) => {
                     }
                 }}
             >
-                {data?.map((card: any, index: number) => {
-                    return (
-                        <SwiperSlide
-                            key={index}
-                            style={{ width: '100%', textAlign: 'center' }}
-                            onMouseEnter={() => swiperRef.current.swiper.autoplay.stop()}
-                            onMouseLeave={() => swiperRef.current.swiper.autoplay.start()}
-                        ><RecommendedCard item={card} />
-                        </SwiperSlide>
-                    )
-                })}
+                {recommendPost.length != 0 && (
+                    <>
+                        {recommendPost.map((card: any, index: number) => {
+                            return (
+                                <SwiperSlide
+                                    key={index}
+                                    style={{ width: '100%', textAlign: 'center' }}
+                                    onMouseEnter={() => swiperRef.current.swiper.autoplay.stop()}
+                                    onMouseLeave={() => swiperRef.current.swiper.autoplay.start()}
+                                ><RecommendedCard item={card} />
+                                </SwiperSlide>
+                            )
+                        })}
+                    </>
+                )}
+                {recommendPost.length == 0 && (
+                    <Box display={"flex"} justifyContent={"center"}>
+                        <Text fontSize={30} textAlign={"center"} color={"white"}>No Recommended Post</Text>
+                    </Box>
+                    
+                )}
+                
             </Swiper>
         </Box>
     )

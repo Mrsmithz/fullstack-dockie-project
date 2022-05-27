@@ -33,7 +33,7 @@ const History = ({ posts }: Props) => {
       <Stack px={3}>
         <Grid templateColumns="repeat(6, 1fr)" gap={3} px={paddingX} color={useColorModeValue('#FFFFFF', '#FFFFFF')}>
           <GridItem colSpan={5} h="10" style={{ display: "flex", alignItems: "flex-end"}}>
-            <Text overflow={"hidden"} fontSize={fontNormal}>{historyItem.post.title}</Text>
+            <Text whiteSpace={"nowrap"} overflow={"hidden"} fontSize={fontNormal}>{historyItem.post ? historyItem.post.title : 'None' }</Text>
           </GridItem>
           <GridItem
             colStart={6}
@@ -53,7 +53,7 @@ const History = ({ posts }: Props) => {
   return (
     <Stack className={styles.historyPostBox}>
       {posts.map((item, index) => (
-        <HistoryItem historyItem={item} key={item.id} />
+        <HistoryItem historyItem={item} key={index} />
       ))}
     </Stack>
   );

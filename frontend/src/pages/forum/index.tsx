@@ -84,7 +84,7 @@ const renderRating = (rating: number) => {
             <Button onClick={() => next()}>Next</Button>
         </HStack>
         <Box display={"flex"} justifyContent={"center"} height={600}>
-          <Grid templateColumns="repeat(4, 1fr)" gap={15}>
+          <Grid templateColumns="repeat(4, 1fr)" gap={19}>
               {currentList.map((item : any, index : number) => (
                 <GridItem key={index}>
                     <Button height={220} padding={5} paddingY={20} _hover={{transform: 'scale(1.03)'}} onClick={() => goNext(item._id)}>

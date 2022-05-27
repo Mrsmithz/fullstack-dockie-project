@@ -17,9 +17,19 @@ query ($id: MongoID!){
       lastName
       followings{
         followingId
+        following{
+            firstName
+            lastName
+            image
+          }
       }
       followers{
         followerId
+        follower{
+            firstName
+            lastName
+            image
+          }
       }
       posts{
         _id

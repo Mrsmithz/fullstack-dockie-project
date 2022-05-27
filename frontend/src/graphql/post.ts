@@ -8,6 +8,7 @@ export const GET_ALL_POSTS = gql`
       document
       status
       ratingAvg
+      images
     }
   }
 `;
@@ -27,6 +28,7 @@ export const GET_ALL_POST_FOR_FILTER_AUTHOR = gql`
       tags {
         name
       }
+      images
     }
   }
 `

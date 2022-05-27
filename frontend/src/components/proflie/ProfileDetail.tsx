@@ -11,7 +11,6 @@ import ModalFollowing from "./ModalFollowing"
 import axios from "axios"
 const size = { base: "100%", md: "80%", lg: "60%" };
 
-
 type Props = {
     profile: Profile,
     refetch: Function
@@ -39,6 +38,7 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
     const [followMutation] = useMutation(FOLLOW_USER_MUTATION)
     const [unfollowMutation] = useMutation(UNFOLLOW_USER_MUTATION)
     const [followButton, setFollowButton] = useState(true)
+    const [renderFollowButton, setRenderFollowButton] = useState(false)
     const [myProfile, setMyProfile] = useState(false)
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { 
@@ -48,7 +48,7 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
     } = useDisclosure()
     const followUser = useCallback(async () => {
         setFollowButton(false)
-        await followMutation({ variables: { followingId: profile._id } })
+        await followMutation({ variables: { followingId: profile?._id } })
         toast({
             title: `Follow ${profile?.firstName}`,
             status: 'success',
@@ -59,7 +59,7 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
     }, [])
     const unFollowUser = useCallback(async () => {
         setFollowButton(true)
-        await unfollowMutation({ variables: { followingId: profile._id } })
+        await unfollowMutation({ variables: { followingId: profile?._id } })
         toast({
             title: `Unfollow ${profile?.firstName}`,
             status: 'error',
@@ -71,19 +71,26 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
 
     const checkProfile = useCallback(async () => {
         const userId = await axios.get("http://localhost:8001/api/v1/me")
-        if (profile._id == userId.data._id) {
+        if (profile?._id == userId.data._id) {
             setMyProfile(true)
+        } else {
+            setMyProfile(false)
         }
         const checkFollowing = profile.followers.some(
             (follower) => follower.followerId == userId.data._id
         );
         if (checkFollowing) {
             setFollowButton(false)
+        } else {
+            setFollowButton(true)
         }
-    }, [])
+        setRenderFollowButton(true)
+    }, [profile, setFollowButton, setRenderFollowButton, setMyProfile])
     useEffect(() => {
+        setRenderFollowButton(false)
+        setFollowButton(true)
         checkProfile()
-    }, [checkProfile])
+    }, [checkProfile, setRenderFollowButton, setFollowButton])
     return (
         <>
             <Center
@@ -115,10 +122,10 @@ const ProfileDetail = ({ profile, refetch }: Props) => {
                             <Button onClick={() => onOpenFollowing()} ml={10}>{profile?.followings.length} Following</Button>
                         </Center>
                         <Center mt={5}>
-                            {followButton && myProfile == false && (
+                            {renderFollowButton && followButton && myProfile == false && (
                                 <Button colorScheme="blue" variant="solid" onClick={() => followUser()}>+ Follow</Button>
                             )}
-                            {!followButton && myProfile == false && (
+                            {renderFollowButton && !followButton && myProfile == false && (
                                 <Button colorScheme="red" variant="solid" onClick={() => unFollowUser()}>Un follow</Button>
                             )}
                         </Center>

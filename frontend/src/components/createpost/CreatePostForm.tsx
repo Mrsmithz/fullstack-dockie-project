@@ -313,6 +313,7 @@ const CreatePostForm = ({ postData, document, toNextPage, backPage }: Props) => 
             backgroundColor="white"
             color="black"
             onChange={handleDescriptionChange}
+            rows={20}
           />
         </FormControl>
 

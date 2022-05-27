@@ -41,7 +41,6 @@ import ImageModal from "../modal/ImageModal"
 const size = { base: "100%", md: "80%", lg: "60%" };
 
 type Props = {
-    postData: any
     addComment: Function
     ratePost: Function
     deleteComment: Function,
@@ -51,7 +50,7 @@ type Props = {
     myId: string
 }
 
-const PostDetail = ({ postData, addComment, ratePost, deleteComment, post, myRating, owner, myId }: Props) => {
+const PostDetail = ({ addComment, ratePost, deleteComment, post, myRating, owner, myId }: Props) => {
     const { data: token, status } = useSession()
 
     const router = useRouter()
